@@ -1,0 +1,2501 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Embarque Idiomas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Aprenda inglês, espanhol, italiano, francês, alemão e japonês para viagens.">
+<meta name="theme-color" content="#13203A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Embarque">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=Overpass+Mono:wght@500;700&display=swap">
+</head>
+<body>
+<style>
+/* Layout: coluna única de app (máx. 640px), placas de sinalização de aeroporto, quadro de partidas no topo */
+:root{
+  --bg:#F1F2EE; --surface:#FFFFFF; --soft:#E6E8ED; --ink:#13203A; --muted:#566076; --line:#D6D9E0;
+  --sign:#F2B705; --sign-ink:#13203A; --go:#1C7D52; --stop:#B83C27;
+  --board:#13203A; --board-ink:#F1F2EE; --board-dim:#93A0B8;
+  --f-display:"Overpass",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Overpass",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"Overpass Mono",ui-monospace,Menlo,Consolas,monospace;
+  --f-cjk:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1220; --surface:#151E31; --soft:#1D2840; --ink:#ECEFF5; --muted:#9AA5BA; --line:#283450;
+  --sign:#F5C330; --sign-ink:#0C1220; --go:#4CC08A; --stop:#F0806A;
+  --board:#060A13; --board-ink:#ECEFF5; --board-dim:#7E8BA3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1220; --surface:#151E31; --soft:#1D2840; --ink:#ECEFF5; --muted:#9AA5BA; --line:#283450;
+  --sign:#F5C330; --sign-ink:#0C1220; --go:#4CC08A; --stop:#F0806A;
+  --board:#060A13; --board-ink:#ECEFF5; --board-dim:#7E8BA3; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sign);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:1.75rem;font-weight:800}
+h2{font-size:1.25rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 56px;display:flex;flex-direction:column;gap:20px}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.label{font-family:var(--f-mono);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:12px}
+.spacer{flex:1}
+
+/* Barra superior */
+.top{display:flex;align-items:center;gap:12px}
+.brand{font-family:var(--f-mono);font-weight:700;letter-spacing:.18em;font-size:.9rem;display:flex;align-items:center;gap:8px}
+.brand i{display:inline-block;width:22px;height:22px;border-radius:5px;background:var(--sign);position:relative}
+.brand i::after{content:"";position:absolute;inset:6px 5px 6px 6px;border-top:3px solid var(--sign-ink);border-right:3px solid var(--sign-ink);transform:rotate(45deg) translate(-2px,2px);width:7px;height:7px}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;height:40px;min-width:40px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-size:.875rem}
+.iconbtn svg{width:18px;height:18px;flex:none}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--go)}
+
+/* Idiomas */
+.langs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.langs::-webkit-scrollbar{display:none}
+.lang{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;min-width:84px}
+.lang b{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em}
+.lang span{font-size:.75rem;color:var(--muted)}
+.lang[aria-pressed="true"]{background:var(--sign);border-color:var(--sign);color:var(--sign-ink)}
+.lang[aria-pressed="true"] span{color:var(--sign-ink)}
+
+/* Quadro de partidas */
+.board{background:var(--board);color:var(--board-ink);border-radius:var(--r);padding:18px;display:grid;grid-template-columns:1fr auto;gap:14px 16px;align-items:end}
+.board .label{color:var(--board-dim)}
+.flap{font-family:var(--f-mono);font-weight:700;font-size:2.4rem;line-height:1;letter-spacing:.04em;display:flex;gap:4px;align-items:baseline}
+.flap .d{background:rgba(255,255,255,.08);color:var(--sign);border-radius:4px;padding:4px 6px;min-width:1.2em;text-align:center;font-variant-numeric:tabular-nums}
+.flap small{font-size:.9rem;color:var(--board-ink);margin-left:6px;letter-spacing:.1em}
+.board .dest{font-weight:600}
+.meter{grid-column:1/-1;display:flex;flex-direction:column;gap:6px}
+.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--sign);border-radius:99px}
+.bar.light{background:var(--soft)}
+.bar.light>i{background:var(--go)}
+.board .stats{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.78rem;color:var(--board-dim);font-variant-numeric:tabular-nums}
+.board .btn{background:transparent;border-color:rgba(255,255,255,.25);color:var(--board-ink)}
+
+/* Botões */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 16px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;text-align:center}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sign{background:var(--sign);border-color:var(--sign);color:var(--sign-ink)}
+.btn.ink{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.block{width:100%}
+.btn.ghost{background:transparent}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* Próxima atividade */
+.next{border:2px solid var(--ink);border-radius:var(--r);padding:16px;display:flex;gap:14px;align-items:center;background:var(--surface)}
+.next .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+
+/* Placas de cenário */
+.gates{display:grid;gap:14px}
+.gate{border-radius:var(--r);overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.gate-head{background:var(--sign);color:var(--sign-ink);display:flex;align-items:center;gap:12px;padding:12px 14px}
+.gate-head svg{width:30px;height:30px;flex:none}
+.gate-head h3{flex:1}
+.gate-head .code{font-family:var(--f-mono);font-weight:700;font-size:.8rem;letter-spacing:.1em}
+.lv{display:grid;grid-template-columns:repeat(3,1fr)}
+.lv button{border:0;border-right:1px solid var(--line);background:transparent;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.85rem}
+.lv button:last-child{border-right:0}
+.lv button:hover{background:var(--soft)}
+.lv .pips{display:flex;gap:4px}
+.lv .pips i{width:10px;height:10px;border-radius:2px;border:1.5px solid var(--muted)}
+.lv .pips i.done{background:var(--go);border-color:var(--go)}
+.lv .rec{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.1em;color:var(--go);font-weight:700}
+.soon{display:flex;flex-wrap:wrap;gap:8px}
+.soon span{border:1px dashed var(--line);border-radius:6px;padding:4px 10px;font-size:.82rem;color:var(--muted)}
+
+/* Cartões genéricos */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.tip{border-left:4px solid var(--sign);padding:4px 0 4px 12px;font-size:.92rem}
+
+/* Atividades da unidade */
+.acts{display:flex;flex-direction:column;gap:10px}
+.act{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;width:100%}
+.act:hover{border-color:var(--ink)}
+.act .n{font-family:var(--f-mono);font-weight:700;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;flex:none}
+.act.done .n{background:var(--go);border-color:var(--go);color:var(--surface)}
+.act .txt{flex:1;min-width:0}
+.act .score{font-family:var(--f-mono);font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Lição */
+.lhead{display:flex;align-items:center;gap:12px}
+.lhead .t{flex:1;min-width:0}
+.progress{height:6px;background:var(--soft);border-radius:99px;overflow:hidden}
+.progress>i{display:block;height:100%;background:var(--ink)}
+.phrase-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.who{font-family:var(--f-mono);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;display:inline-flex;align-self:flex-start;padding:3px 8px;border-radius:4px;background:var(--soft)}
+.who.v{background:var(--sign);color:var(--sign-ink)}
+.phrase{font-family:var(--f-display);font-size:1.6rem;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.phrase:lang(ja),.opt:lang(ja),.bubble:lang(ja){font-family:var(--f-cjk)}
+.romaji{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.pt{color:var(--muted)}
+.w-ok{color:var(--go)}
+.w-miss{color:var(--stop);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.mic{width:76px;height:76px;border-radius:50%;border:0;background:var(--sign);color:var(--sign-ink);display:grid;place-items:center;cursor:pointer;flex:none}
+.mic svg{width:32px;height:32px}
+.mic.on{background:var(--stop);color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(184,60,39,.5)}100%{box-shadow:0 0 0 18px rgba(184,60,39,0)}}
+@media (prefers-reduced-motion: reduce){.mic.on{animation:none}}
+.speakrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.result{border-radius:8px;padding:12px;background:var(--soft);display:flex;flex-direction:column;gap:6px}
+.pct{font-family:var(--f-mono);font-weight:700;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.pct.good{color:var(--go)}
+.pct.bad{color:var(--stop)}
+.speed{display:flex;align-items:center;gap:4px;align-self:flex-start;background:var(--soft);border-radius:999px;padding:4px}
+.speed .label{padding:0 8px 0 10px}
+.speed button{border:0;background:transparent;border-radius:999px;padding:6px 14px;min-height:36px;cursor:pointer;font-weight:600;font-size:.875rem;color:var(--muted)}
+.speed button[aria-checked="true"]{background:var(--ink);color:var(--bg)}
+.lfoot{display:flex;gap:10px}
+.lfoot .btn{flex:1}
+
+/* Conversa */
+.chat{display:flex;flex-direction:column;gap:8px}
+.bubble{max-width:88%;padding:10px 14px;border-radius:14px;line-height:1.4;overflow-wrap:anywhere}
+.bubble.a{background:var(--surface);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bubble.v{background:var(--ink);color:var(--bg);align-self:flex-end;border-bottom-right-radius:4px}
+.bubble small{display:block;opacity:.7;font-size:.8rem}
+
+/* Perguntas de múltipla escolha */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;cursor:pointer;font-size:1rem}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt.right{border-color:var(--go);background:color-mix(in srgb,var(--go) 12%,var(--surface))}
+.opt.wrong{border-color:var(--stop);background:color-mix(in srgb,var(--stop) 12%,var(--surface))}
+.opt:disabled{cursor:default}
+.listen-big{display:flex;gap:10px;justify-content:center;padding:10px 0}
+
+/* Formulários */
+.field{display:flex;flex-direction:column;gap:6px}
+.field input,.field select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;min-height:44px;width:100%}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg label{border:1px solid var(--line);border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer;background:var(--surface);display:flex;flex-direction:column;gap:2px;font-size:.85rem}
+.seg label b{font-family:var(--f-mono);font-size:1rem}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg input:focus-visible+label{outline:3px solid var(--sign);outline-offset:2px}
+
+/* Plano */
+.days{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.day{display:grid;grid-template-columns:76px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.day:last-child{border-bottom:0}
+.day .dd{font-family:var(--f-mono);font-size:.78rem;font-weight:700;letter-spacing:.06em;color:var(--muted);padding-top:2px}
+.day ul{margin:0;padding:0;list-style:none;font-size:.9rem;display:flex;flex-direction:column;gap:2px}
+
+/* Resultado do teste */
+.lvbars{display:flex;flex-direction:column;gap:10px}
+.lvbar{display:grid;grid-template-columns:110px 1fr 48px;gap:10px;align-items:center;font-size:.9rem}
+.lvbar .pctx{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.stamp{align-self:flex-start;border:3px solid var(--go);color:var(--go);border-radius:8px;padding:8px 14px;font-family:var(--f-mono);font-weight:700;letter-spacing:.12em;text-transform:uppercase;transform:rotate(-3deg)}
+
+/* Avisos */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.9rem;max-width:calc(100% - 32px);z-index:20}
+.note{background:var(--soft);border-radius:8px;padding:12px;font-size:.9rem}
+.err{color:var(--stop);font-size:.9rem}
+.confirm{border:2px solid var(--stop);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.center{text-align:center}
+.authbox{margin-top:8vh}
+
+/* ===== v2 ===== */
+.linkbtn{border:0;background:none;padding:4px 0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.session{background:var(--surface);border:2px solid var(--ink);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.steps li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0}
+.steps .txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.steps .ck{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;font-family:var(--f-mono);font-weight:700;font-size:.85rem;color:var(--muted)}
+.steps .ck svg{width:16px;height:16px}
+.steps li.cur .ck{border-color:var(--ink);color:var(--ink)}
+.steps li.done .ck{background:var(--go);border-color:var(--go);color:var(--surface)}
+.steps li.done b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.btn.small{min-height:36px;padding:6px 12px;font-size:.875rem}
+.gate.pro .gate-head{background:var(--ink);color:var(--bg)}
+.feature{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;cursor:pointer}
+.feature:hover{border-color:var(--ink)}
+.feature .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.chev{font-size:1.6rem;color:var(--muted);line-height:1}
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tool{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;min-height:64px}
+.tool:hover{border-color:var(--ink)}
+.chunk{border:2px dashed var(--sign);border-radius:var(--r);padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.pattern{font-family:var(--f-mono);font-weight:700;font-size:1.25rem}
+.pattern:lang(ja){font-family:var(--f-cjk)}
+.answer{font-size:1.1rem;line-height:1.55;overflow-wrap:anywhere}
+.act .n svg{width:18px;height:18px}
+textarea{font:inherit;color:inherit;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 12px;width:100%;resize:vertical;min-height:96px;line-height:1.45}
+.qa h3{font-size:1rem}
+.seg.three{grid-template-columns:repeat(3,1fr)}
+.mix,.method,.sites{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.sites{list-style:none;padding:0}
+.sites li{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid var(--line)}
+.sites li:first-child{border-top:0}
+.sites a{color:var(--ink);font-weight:700;text-underline-offset:3px}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.seg.three label b{font-family:var(--f-body);font-size:.9rem}
+.talkf{border:2px solid var(--sign)}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick input{position:absolute;opacity:0;pointer-events:none}
+.pick label{border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;background:var(--surface);font-size:.9rem}
+.pick input:checked+label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pick input:focus-visible+label{outline:3px solid var(--sign);outline-offset:2px}
+.chat.talk{gap:10px}
+.brow{display:flex;gap:8px;align-items:flex-start}
+.brow span{flex:1;min-width:0}
+.mini{border:0;background:var(--soft);color:var(--ink);border-radius:50%;width:28px;height:28px;display:inline-grid;place-items:center;cursor:pointer;flex:none;vertical-align:middle}
+.mini svg{width:13px;height:13px}
+.bubble details{margin-top:4px;font-size:.85rem;color:var(--muted)}
+.bubble summary{cursor:pointer}
+.bubble .romaji{display:block;margin-top:2px}
+.typing{color:var(--muted)}
+.fix{align-self:flex-end;max-width:88%;border-left:4px solid var(--sign);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+.card .fix,.qa .fix{align-self:stretch;max-width:none;background:var(--soft)}
+.ok{align-self:flex-end;color:var(--go)}
+.better{font-size:1rem}
+.composer{position:sticky;bottom:0;background:var(--bg);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--line)}
+.composer textarea{min-height:48px;flex:1;min-width:0;background:var(--surface)}
+.mic.sm{width:52px;height:52px}
+.mic.sm svg{width:24px;height:24px}
+.mic:disabled{opacity:.45}
+.fixrow{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid var(--line)}
+.fixrow:first-of-type{border-top:0}
+</style>
+<div id="app"></div>
+<script>
+/* Conteúdo das lições. Cada linha: [quem, frase, tradução, (romaji só no japonês)]
+   quem: "a" = a outra pessoa (oficial, garçom); "v" = você */
+const C = {
+en: {
+  imm: { tip: "Responda só o que foi perguntado, com frases curtas. Tenha o endereço do hotel e a passagem de volta à mão.", l: [
+    [["a","Good morning. Passport, please.","Bom dia. Passaporte, por favor."],
+     ["v","Good morning. Here you go.","Bom dia. Aqui está."],
+     ["a","What is the purpose of your visit?","Qual é o motivo da sua visita?"],
+     ["v","Tourism. I'm on vacation.","Turismo. Estou de férias."],
+     ["a","How long will you stay?","Quanto tempo vai ficar?"],
+     ["v","Ten days.","Dez dias."],
+     ["a","Where are you staying?","Onde vai se hospedar?"],
+     ["v","At a hotel in Miami.","Em um hotel em Miami."]],
+    [["a","Hi, can I see your passport and customs form?","Olá, posso ver seu passaporte e o formulário da alfândega?"],
+     ["v","Sure, here they are.","Claro, aqui estão."],
+     ["a","Is this your first time in the United States?","É sua primeira vez nos Estados Unidos?"],
+     ["v","No, I came here two years ago on vacation.","Não, vim há dois anos, de férias."],
+     ["a","Do you have a return ticket?","Você tem passagem de volta?"],
+     ["v","Yes, I fly back to São Paulo on the twentieth.","Sim, volto para São Paulo no dia vinte."],
+     ["a","Are you bringing any food or plants?","Está trazendo algum alimento ou planta?"],
+     ["v","Just some chocolates and a few snacks.","Só alguns chocolates e uns lanchinhos."]],
+    [["a","What do you do for a living back in Brazil?","Com o que você trabalha no Brasil?"],
+     ["v","I work in finance, and I'm taking a couple of weeks off.","Trabalho com finanças e estou tirando duas semanas de folga."],
+     ["a","Are you traveling alone or meeting someone here?","Está viajando sozinho ou vai encontrar alguém aqui?"],
+     ["v","I'm meeting some friends in Orlando, then driving down to Miami.","Vou encontrar uns amigos em Orlando e depois descer de carro até Miami."],
+     ["a","How much cash are you carrying?","Quanto em dinheiro você está trazendo?"],
+     ["v","About eight hundred dollars, plus my credit cards.","Cerca de oitocentos dólares, além dos meus cartões de crédito."],
+     ["a","Alright, you're all set. Enjoy your stay.","Certo, está tudo liberado. Aproveite a estadia."],
+     ["v","Thank you, have a great day.","Obrigado, tenha um ótimo dia."]]
+  ]},
+  rest: { tip: "Nos EUA a gorjeta não vem na conta: deixe de 18% a 20%. O refil de refrigerante costuma ser grátis.", l: [
+    [["a","Hi! How many people?","Oi! Quantas pessoas?"],
+     ["v","Table for two, please.","Mesa para dois, por favor."],
+     ["a","Here's your menu. Something to drink?","Aqui está o cardápio. Algo para beber?"],
+     ["v","A water, please.","Uma água, por favor."],
+     ["a","Are you ready to order?","Prontos para pedir?"],
+     ["v","I'd like the chicken salad.","Eu gostaria da salada de frango."],
+     ["a","Anything else?","Mais alguma coisa?"],
+     ["v","No, thank you. Check, please.","Não, obrigado. A conta, por favor."]],
+    [["a","Do you have a reservation?","Vocês têm reserva?"],
+     ["v","Yes, it's under Silva, for seven thirty.","Sim, está no nome de Silva, para as sete e meia."],
+     ["a","How would you like your steak cooked?","Qual o ponto da carne?"],
+     ["v","Medium well, please.","Ao ponto para bem passada, por favor."],
+     ["a","Would you like fries or a side salad with that?","Vai querer batata frita ou salada de acompanhamento?"],
+     ["v","Fries, please. And could I get a refill on my soda?","Batata, por favor. E pode completar meu refrigerante?"],
+     ["a","How is everything tasting?","Está tudo bom?"],
+     ["v","Everything's great, thanks. Could we get the check?","Tudo ótimo, obrigado. Pode trazer a conta?"]],
+    [["a","Hi folks, have you dined with us before?","Olá, vocês já comeram aqui antes?"],
+     ["v","No, it's our first time. What would you recommend?","Não, é a primeira vez. O que você recomenda?"],
+     ["a","Our short ribs are really popular, and the fish tacos are great too.","Nossa costela é muito pedida, e os tacos de peixe também são ótimos."],
+     ["v","I have a peanut allergy. Is the sauce safe for me?","Tenho alergia a amendoim. O molho é seguro para mim?"],
+     ["a","Let me double-check with the kitchen to be sure.","Vou confirmar com a cozinha para ter certeza."],
+     ["v","Thanks. And could we split the check, please?","Obrigado. E podemos dividir a conta, por favor?"],
+     ["a","No problem. Would you like a box for the leftovers?","Sem problema. Querem uma embalagem para o que sobrou?"],
+     ["v","Yes, please. Is the tip included?","Sim, por favor. A gorjeta está incluída?"]]
+  ]}
+},
+es: {
+  imm: { tip: "Na Espanha (espaço Schengen) podem pedir seguro viagem, reserva de hotel e comprovação de dinheiro. Leve tudo no celular ou impresso.", l: [
+    [["a","Buenos días. Su pasaporte, por favor.","Bom dia. Seu passaporte, por favor."],
+     ["v","Buenos días. Aquí tiene.","Bom dia. Aqui está."],
+     ["a","¿Cuál es el motivo de su viaje?","Qual é o motivo da sua viagem?"],
+     ["v","Turismo. Estoy de vacaciones.","Turismo. Estou de férias."],
+     ["a","¿Cuánto tiempo se va a quedar?","Quanto tempo vai ficar?"],
+     ["v","Diez días.","Dez dias."],
+     ["a","¿Dónde se va a alojar?","Onde vai se hospedar?"],
+     ["v","En un hotel en Madrid.","Em um hotel em Madri."]],
+    [["a","¿Tiene el billete de vuelta?","Tem a passagem de volta?"],
+     ["v","Sí, vuelvo a Brasil el día veinte.","Sim, volto ao Brasil no dia vinte."],
+     ["a","¿Es la primera vez que viene a España?","É a primeira vez que vem à Espanha?"],
+     ["v","No, estuve aquí hace dos años.","Não, estive aqui há dois anos."],
+     ["a","¿Trae algo que declarar?","Traz algo a declarar?"],
+     ["v","No, solo ropa y algunos regalos.","Não, só roupas e alguns presentes."],
+     ["a","¿Viaja solo o acompañado?","Viaja sozinho ou acompanhado?"],
+     ["v","Viajo con un amigo.","Viajo com um amigo."]],
+    [["a","¿A qué se dedica en Brasil?","Com o que você trabalha no Brasil?"],
+     ["v","Trabajo en finanzas y me he tomado dos semanas libres.","Trabalho com finanças e tirei duas semanas de folga."],
+     ["a","¿Tiene seguro de viaje y una reserva de hotel?","Tem seguro viagem e reserva de hotel?"],
+     ["v","Sí, aquí tiene la reserva y la póliza del seguro.","Sim, aqui estão a reserva e a apólice do seguro."],
+     ["a","¿Cuánto dinero lleva para la estancia?","Quanto dinheiro leva para a estadia?"],
+     ["v","Unos mil euros en efectivo, además de las tarjetas.","Uns mil euros em espécie, além dos cartões."],
+     ["a","Muy bien. Que disfrute de su estancia.","Muito bem. Aproveite a estadia."],
+     ["v","Muchas gracias, que tenga un buen día.","Muito obrigado, tenha um bom dia."]]
+  ]},
+  rest: { tip: "Na Espanha o almoço é tarde (14h a 16h) e o jantar depois das 21h. Gorjeta é opcional: arredondar a conta já está bom.", l: [
+    [["a","¡Hola! ¿Cuántos son?","Olá! Quantas pessoas?"],
+     ["v","Una mesa para dos, por favor.","Uma mesa para dois, por favor."],
+     ["a","Aquí tienen la carta. ¿Qué van a beber?","Aqui está o cardápio. O que vão beber?"],
+     ["v","Un agua sin gas, por favor.","Uma água sem gás, por favor."],
+     ["a","¿Ya saben qué van a pedir?","Já sabem o que vão pedir?"],
+     ["v","Quiero la paella, por favor.","Quero a paella, por favor."],
+     ["a","¿Algo más?","Mais alguma coisa?"],
+     ["v","No, gracias. La cuenta, por favor.","Não, obrigado. A conta, por favor."]],
+    [["a","¿Tienen reserva?","Vocês têm reserva?"],
+     ["v","Sí, a nombre de Silva, para las ocho y media.","Sim, no nome de Silva, para as oito e meia."],
+     ["a","¿Cómo quiere la carne?","Como quer a carne?"],
+     ["v","Al punto, por favor.","Ao ponto, por favor."],
+     ["a","¿Le traigo algo de beber mientras tanto?","Trago algo para beber enquanto isso?"],
+     ["v","Sí, una copa de vino tinto de la casa.","Sim, uma taça de vinho tinto da casa."],
+     ["a","¿Qué tal está todo?","Está tudo bem?"],
+     ["v","Todo riquísimo, gracias. ¿Nos trae la cuenta?","Tudo delicioso, obrigado. Pode nos trazer a conta?"]],
+    [["a","¿Es la primera vez que vienen? ¿Les explico la carta?","É a primeira vez que vêm? Explico o cardápio?"],
+     ["v","Sí, por favor. ¿Qué nos recomienda de la casa?","Sim, por favor. O que recomenda da casa?"],
+     ["a","El pulpo a la gallega y el cochinillo son nuestras especialidades.","O polvo à galega e o leitão são nossas especialidades."],
+     ["v","Soy alérgico a los frutos secos. ¿Llevan algo de eso?","Sou alérgico a castanhas. Os pratos levam algo disso?"],
+     ["a","Lo consulto con cocina para asegurarme.","Vou consultar a cozinha para ter certeza."],
+     ["v","Gracias. ¿Podemos pagar por separado?","Obrigado. Podemos pagar separado?"],
+     ["a","Claro. ¿Les apetece algún postre o un café?","Claro. Querem uma sobremesa ou um café?"],
+     ["v","Dos cafés solos, por favor. ¿El servicio está incluido?","Dois cafés pretos, por favor. O serviço está incluído?"]]
+  ]}
+},
+it: {
+  imm: { tip: "Na Itália (espaço Schengen) podem pedir seguro viagem, reserva de hotel e comprovação de dinheiro. Leve tudo no celular ou impresso.", l: [
+    [["a","Buongiorno. Passaporto, per favore.","Bom dia. Passaporte, por favor."],
+     ["v","Buongiorno. Ecco a lei.","Bom dia. Aqui está."],
+     ["a","Qual è il motivo del viaggio?","Qual é o motivo da viagem?"],
+     ["v","Turismo. Sono in vacanza.","Turismo. Estou de férias."],
+     ["a","Quanto tempo si ferma?","Quanto tempo vai ficar?"],
+     ["v","Dieci giorni.","Dez dias."],
+     ["a","Dove alloggia?","Onde vai se hospedar?"],
+     ["v","In un albergo a Roma.","Em um hotel em Roma."]],
+    [["a","Ha il biglietto di ritorno?","Tem a passagem de volta?"],
+     ["v","Sì, torno in Brasile il venti.","Sim, volto ao Brasil no dia vinte."],
+     ["a","È la prima volta che viene in Italia?","É a primeira vez que vem à Itália?"],
+     ["v","No, sono già stato qui due anni fa.","Não, já estive aqui há dois anos."],
+     ["a","Ha qualcosa da dichiarare?","Tem algo a declarar?"],
+     ["v","No, solo vestiti e qualche regalo.","Não, só roupas e alguns presentes."],
+     ["a","Viaggia da solo?","Viaja sozinho?"],
+     ["v","No, viaggio con un amico.","Não, viajo com um amigo."]],
+    [["a","Che lavoro fa in Brasile?","Com o que trabalha no Brasil?"],
+     ["v","Lavoro nel settore finanziario e mi sono preso due settimane di ferie.","Trabalho no setor financeiro e tirei duas semanas de férias."],
+     ["a","Ha un'assicurazione di viaggio e la prenotazione dell'albergo?","Tem seguro viagem e a reserva do hotel?"],
+     ["v","Sì, ecco la prenotazione e la polizza dell'assicurazione.","Sim, aqui estão a reserva e a apólice do seguro."],
+     ["a","Quanti soldi ha con sé per il soggiorno?","Quanto dinheiro tem consigo para a estadia?"],
+     ["v","Circa mille euro in contanti, più le carte di credito.","Cerca de mil euros em espécie, mais os cartões de crédito."],
+     ["a","Va bene. Buona permanenza.","Tudo bem. Boa estadia."],
+     ["v","Grazie mille, buona giornata.","Muito obrigado, tenha um bom dia."]]
+  ]},
+  rest: { tip: "Na Itália o 'coperto' (couvert) costuma vir na conta. Cappuccino depois do almoço é incomum: peça 'un caffè', que é um expresso.", l: [
+    [["a","Buonasera! Quanti siete?","Boa noite! Quantas pessoas?"],
+     ["v","Un tavolo per due, per favore.","Uma mesa para dois, por favor."],
+     ["a","Ecco il menù. Cosa vi porto da bere?","Aqui está o cardápio. O que trago para beber?"],
+     ["v","Un'acqua naturale, per favore.","Uma água sem gás, por favor."],
+     ["a","Avete deciso?","Já decidiram?"],
+     ["v","Vorrei gli spaghetti alla carbonara.","Eu gostaria do espaguete à carbonara."],
+     ["a","Altro?","Mais alguma coisa?"],
+     ["v","No, grazie. Il conto, per favore.","Não, obrigado. A conta, por favor."]],
+    [["a","Avete una prenotazione?","Vocês têm reserva?"],
+     ["v","Sì, a nome Silva, per le otto.","Sim, no nome de Silva, para as oito."],
+     ["a","Cosa prendete come primo?","O que vão querer de primeiro prato?"],
+     ["v","Le lasagne, e come secondo il pollo arrosto.","A lasanha, e de segundo prato o frango assado."],
+     ["a","Vino rosso o bianco?","Vinho tinto ou branco?"],
+     ["v","Un quarto di vino rosso della casa, per favore.","Um quarto de litro de vinho tinto da casa, por favor."],
+     ["a","Va tutto bene?","Está tudo bem?"],
+     ["v","Tutto buonissimo, grazie. Ci porta il conto?","Tudo ótimo, obrigado. Pode nos trazer a conta?"]],
+    [["a","Volete sentire i piatti del giorno?","Querem ouvir os pratos do dia?"],
+     ["v","Sì, volentieri. Cosa ci consiglia?","Sim, com prazer. O que nos recomenda?"],
+     ["a","Oggi abbiamo un risotto ai funghi porcini e l'ossobuco.","Hoje temos risoto de funghi porcini e ossobuco."],
+     ["v","Sono allergico alla frutta secca. Il risotto la contiene?","Sou alérgico a castanhas. O risoto contém?"],
+     ["a","Chiedo subito in cucina per sicurezza.","Pergunto agora na cozinha, por segurança."],
+     ["v","Grazie. Possiamo pagare separatamente?","Obrigado. Podemos pagar separado?"],
+     ["a","Certo. Gradite un dolce o un caffè?","Claro. Gostariam de uma sobremesa ou um café?"],
+     ["v","Due caffè, grazie. Il coperto è compreso?","Dois cafés, obrigado. O couvert está incluído?"]]
+  ]}
+},
+fr: {
+  imm: { tip: "Comece sempre com 'Bonjour': na França é falta de educação ir direto ao assunto. Como é Schengen, leve seguro viagem e reserva do hotel.", l: [
+    [["a","Bonjour. Votre passeport, s'il vous plaît.","Bom dia. Seu passaporte, por favor."],
+     ["v","Bonjour. Le voici.","Bom dia. Aqui está."],
+     ["a","Quel est le motif de votre voyage ?","Qual é o motivo da sua viagem?"],
+     ["v","Le tourisme. Je suis en vacances.","Turismo. Estou de férias."],
+     ["a","Combien de temps restez-vous ?","Quanto tempo vai ficar?"],
+     ["v","Dix jours.","Dez dias."],
+     ["a","Où logez-vous ?","Onde vai se hospedar?"],
+     ["v","Dans un hôtel à Paris.","Em um hotel em Paris."]],
+    [["a","Avez-vous votre billet de retour ?","Tem a passagem de volta?"],
+     ["v","Oui, je rentre au Brésil le vingt.","Sim, volto ao Brasil no dia vinte."],
+     ["a","C'est votre première visite en France ?","É sua primeira visita à França?"],
+     ["v","Non, je suis déjà venu il y a deux ans.","Não, já vim há dois anos."],
+     ["a","Avez-vous quelque chose à déclarer ?","Tem algo a declarar?"],
+     ["v","Non, seulement des vêtements et quelques cadeaux.","Não, só roupas e alguns presentes."],
+     ["a","Vous voyagez seul ?","Viaja sozinho?"],
+     ["v","Non, je voyage avec un ami.","Não, viajo com um amigo."]],
+    [["a","Quelle est votre profession au Brésil ?","Qual é sua profissão no Brasil?"],
+     ["v","Je travaille dans la finance et j'ai pris deux semaines de congé.","Trabalho com finanças e tirei duas semanas de folga."],
+     ["a","Avez-vous une assurance voyage et une réservation d'hôtel ?","Tem seguro viagem e reserva de hotel?"],
+     ["v","Oui, voici la réservation et l'attestation d'assurance.","Sim, aqui estão a reserva e o comprovante do seguro."],
+     ["a","Combien d'argent avez-vous pour votre séjour ?","Quanto dinheiro tem para a estadia?"],
+     ["v","Environ mille euros en espèces, plus mes cartes bancaires.","Cerca de mil euros em espécie, mais meus cartões."],
+     ["a","Très bien. Bon séjour en France.","Muito bem. Boa estadia na França."],
+     ["v","Merci beaucoup, bonne journée.","Muito obrigado, tenha um bom dia."]]
+  ]},
+  rest: { tip: "Na França o serviço já vem incluído ('service compris'). A água da torneira em jarra ('une carafe d'eau') é grátis.", l: [
+    [["a","Bonsoir ! Vous êtes combien ?","Boa noite! Quantas pessoas?"],
+     ["v","Une table pour deux, s'il vous plaît.","Uma mesa para dois, por favor."],
+     ["a","Voici la carte. Qu'est-ce que vous buvez ?","Aqui está o cardápio. O que vão beber?"],
+     ["v","Une carafe d'eau, s'il vous plaît.","Uma jarra de água, por favor."],
+     ["a","Vous avez choisi ?","Já escolheram?"],
+     ["v","Je voudrais le steak-frites.","Eu gostaria do bife com fritas."],
+     ["a","Et avec ceci ?","E mais alguma coisa?"],
+     ["v","Rien d'autre, merci. L'addition, s'il vous plaît.","Nada mais, obrigado. A conta, por favor."]],
+    [["a","Vous avez réservé ?","Vocês reservaram?"],
+     ["v","Oui, au nom de Silva, pour vingt heures.","Sim, no nome de Silva, para as vinte horas."],
+     ["a","Quelle cuisson pour la viande ?","Qual o ponto da carne?"],
+     ["v","À point, s'il vous plaît.","Ao ponto, por favor."],
+     ["a","Vous prenez une entrée ?","Vão querer uma entrada?"],
+     ["v","Oui, la soupe à l'oignon, et un verre de vin rouge.","Sim, a sopa de cebola e uma taça de vinho tinto."],
+     ["a","Tout se passe bien ?","Está tudo bem?"],
+     ["v","C'est délicieux, merci. On peut avoir l'addition ?","Está delicioso, obrigado. Pode trazer a conta?"]],
+    [["a","Je vous présente le menu du jour ?","Posso apresentar o menu do dia?"],
+     ["v","Oui, avec plaisir. Qu'est-ce que vous nous conseillez ?","Sim, com prazer. O que nos aconselha?"],
+     ["a","Le confit de canard est notre spécialité, et le poisson est très frais aujourd'hui.","O confit de pato é nossa especialidade, e o peixe está bem fresco hoje."],
+     ["v","Je suis allergique aux fruits à coque. Est-ce que la sauce en contient ?","Sou alérgico a castanhas. O molho contém?"],
+     ["a","Je vérifie tout de suite en cuisine.","Vou verificar agora na cozinha."],
+     ["v","Merci. Est-ce qu'on peut payer séparément ?","Obrigado. Podemos pagar separado?"],
+     ["a","Bien sûr. Vous désirez un dessert ou un café ?","Claro. Desejam uma sobremesa ou um café?"],
+     ["v","Deux cafés, merci. Le service est compris ?","Dois cafés, obrigado. O serviço está incluído?"]]
+  ]}
+},
+de: {
+  imm: { tip: "Muitos lugares na Alemanha ainda preferem dinheiro: tenha euros em espécie. Como é Schengen, leve seguro viagem e reserva do hotel.", l: [
+    [["a","Guten Tag. Ihren Reisepass, bitte.","Bom dia. Seu passaporte, por favor."],
+     ["v","Guten Tag. Bitte schön.","Bom dia. Aqui está."],
+     ["a","Was ist der Zweck Ihrer Reise?","Qual é o objetivo da sua viagem?"],
+     ["v","Tourismus. Ich mache Urlaub.","Turismo. Estou de férias."],
+     ["a","Wie lange bleiben Sie?","Quanto tempo vai ficar?"],
+     ["v","Zehn Tage.","Dez dias."],
+     ["a","Wo übernachten Sie?","Onde vai se hospedar?"],
+     ["v","In einem Hotel in Berlin.","Em um hotel em Berlim."]],
+    [["a","Haben Sie ein Rückflugticket?","Tem passagem de volta?"],
+     ["v","Ja, ich fliege am zwanzigsten zurück nach Brasilien.","Sim, volto para o Brasil no dia vinte."],
+     ["a","Sind Sie zum ersten Mal in Deutschland?","É sua primeira vez na Alemanha?"],
+     ["v","Nein, ich war vor zwei Jahren schon einmal hier.","Não, já estive aqui há dois anos."],
+     ["a","Haben Sie etwas zu verzollen?","Tem algo a declarar?"],
+     ["v","Nein, nur Kleidung und ein paar Geschenke.","Não, só roupas e alguns presentes."],
+     ["a","Reisen Sie allein?","Viaja sozinho?"],
+     ["v","Nein, ich reise mit einem Freund.","Não, viajo com um amigo."]],
+    [["a","Was machen Sie beruflich in Brasilien?","O que você faz profissionalmente no Brasil?"],
+     ["v","Ich arbeite in der Finanzbranche und habe zwei Wochen Urlaub genommen.","Trabalho no setor financeiro e tirei duas semanas de férias."],
+     ["a","Haben Sie eine Reiseversicherung und eine Hotelbuchung?","Tem seguro viagem e reserva de hotel?"],
+     ["v","Ja, hier sind die Buchung und die Versicherungsbestätigung.","Sim, aqui estão a reserva e o comprovante do seguro."],
+     ["a","Wie viel Geld haben Sie für den Aufenthalt dabei?","Quanto dinheiro tem para a estadia?"],
+     ["v","Ungefähr tausend Euro in bar und meine Kreditkarten.","Cerca de mil euros em espécie e meus cartões de crédito."],
+     ["a","In Ordnung. Einen schönen Aufenthalt.","Certo. Boa estadia."],
+     ["v","Vielen Dank, schönen Tag noch.","Muito obrigado, tenha um bom dia."]]
+  ]},
+  rest: { tip: "Na Alemanha, diga o total já com a gorjeta ao pagar (conta de 46 €, diga 'fünfzig'). 'Getrennt oder zusammen?' quer dizer: separado ou junto?", l: [
+    [["a","Guten Abend! Wie viele Personen?","Boa noite! Quantas pessoas?"],
+     ["v","Einen Tisch für zwei, bitte.","Uma mesa para dois, por favor."],
+     ["a","Hier ist die Speisekarte. Was möchten Sie trinken?","Aqui está o cardápio. O que desejam beber?"],
+     ["v","Ein stilles Wasser, bitte.","Uma água sem gás, por favor."],
+     ["a","Haben Sie schon gewählt?","Já escolheram?"],
+     ["v","Ich hätte gern das Schnitzel.","Eu gostaria do schnitzel."],
+     ["a","Sonst noch etwas?","Mais alguma coisa?"],
+     ["v","Nein, danke. Die Rechnung, bitte.","Não, obrigado. A conta, por favor."]],
+    [["a","Haben Sie reserviert?","Vocês reservaram?"],
+     ["v","Ja, auf den Namen Silva, für acht Uhr.","Sim, no nome de Silva, para as oito."],
+     ["a","Wie möchten Sie das Steak?","Como deseja o bife?"],
+     ["v","Medium, bitte.","Ao ponto, por favor."],
+     ["a","Möchten Sie Pommes oder Kartoffelsalat dazu?","Deseja batata frita ou salada de batata para acompanhar?"],
+     ["v","Kartoffelsalat, bitte. Und ein kleines Bier.","Salada de batata, por favor. E uma cerveja pequena."],
+     ["a","Schmeckt es Ihnen?","Estão gostando?"],
+     ["v","Ja, sehr lecker, danke. Wir möchten bitte zahlen.","Sim, muito gostoso, obrigado. Queremos pagar, por favor."]],
+    [["a","Darf ich Ihnen unsere Tagesempfehlung vorstellen?","Posso apresentar a sugestão do dia?"],
+     ["v","Ja, gern. Was können Sie uns empfehlen?","Sim, com prazer. O que pode nos recomendar?"],
+     ["a","Heute haben wir Rinderroulade mit Rotkohl und frischen Spargel.","Hoje temos rolê de carne com repolho roxo e aspargos frescos."],
+     ["v","Ich bin allergisch gegen Nüsse. Ist in der Soße etwas davon?","Sou alérgico a castanhas. Tem algo disso no molho?"],
+     ["a","Ich frage sicherheitshalber in der Küche nach.","Vou perguntar na cozinha, por segurança."],
+     ["v","Danke. Können wir bitte getrennt zahlen?","Obrigado. Podemos pagar separado, por favor?"],
+     ["a","Natürlich. Möchten Sie noch einen Nachtisch oder Kaffee?","Claro. Desejam uma sobremesa ou café?"],
+     ["v","Zwei Espresso, bitte. Kann ich mit Karte zahlen?","Dois expressos, por favor. Posso pagar com cartão?"]]
+  ]}
+},
+ja: {
+  imm: { tip: "O Japão usa o Visit Japan Web para imigração e alfândega: preencha antes do voo e mostre o QR code no desembarque.", l: [
+    [["a","こんにちは。パスポートをお願いします。","Olá. Passaporte, por favor.","konnichiwa. pasupōto o onegai shimasu."],
+     ["v","はい、どうぞ。","Sim, aqui está.","hai, dōzo."],
+     ["a","入国の目的は何ですか。","Qual é o objetivo da sua entrada?","nyūkoku no mokuteki wa nan desu ka."],
+     ["v","観光です。","Turismo.","kankō desu."],
+     ["a","どのくらい滞在しますか。","Quanto tempo vai ficar?","dono kurai taizai shimasu ka."],
+     ["v","十日間です。","Dez dias.","tōkakan desu."],
+     ["a","どこに泊まりますか。","Onde vai se hospedar?","doko ni tomarimasu ka."],
+     ["v","東京のホテルです。","Em um hotel em Tóquio.","tōkyō no hoteru desu."]],
+    [["a","帰りの航空券はありますか。","Tem passagem de volta?","kaeri no kōkūken wa arimasu ka."],
+     ["v","はい、二十日にブラジルに帰ります。","Sim, volto ao Brasil no dia vinte.","hai, hatsuka ni burajiru ni kaerimasu."],
+     ["a","日本は初めてですか。","É a primeira vez no Japão?","nihon wa hajimete desu ka."],
+     ["v","いいえ、二年前に来たことがあります。","Não, já vim há dois anos.","iie, ninen mae ni kita koto ga arimasu."],
+     ["a","申告するものはありますか。","Tem algo a declarar?","shinkoku suru mono wa arimasu ka."],
+     ["v","いいえ、服とお土産だけです。","Não, só roupas e lembrancinhas.","iie, fuku to omiyage dake desu."],
+     ["a","お一人ですか。","Está sozinho?","ohitori desu ka."],
+     ["v","いいえ、友達と一緒です。","Não, estou com um amigo.","iie, tomodachi to issho desu."]],
+    [["a","ブラジルではどんなお仕事をされていますか。","Com o que você trabalha no Brasil?","burajiru de wa donna oshigoto o sarete imasu ka."],
+     ["v","金融関係の仕事をしていて、二週間の休みを取りました。","Trabalho na área financeira e tirei duas semanas de folga.","kin'yū kankei no shigoto o shite ite, nishūkan no yasumi o torimashita."],
+     ["a","滞在先の住所を教えていただけますか。","Pode me informar o endereço onde vai ficar?","taizaisaki no jūsho o oshiete itadakemasu ka."],
+     ["v","はい、こちらがホテルの予約確認書です。","Sim, aqui está a confirmação da reserva do hotel.","hai, kochira ga hoteru no yoyaku kakuninsho desu."],
+     ["a","日本で誰かに会う予定はありますか。","Pretende encontrar alguém no Japão?","nihon de dareka ni au yotei wa arimasu ka."],
+     ["v","いいえ、京都と大阪を観光する予定です。","Não, pretendo conhecer Kyoto e Osaka.","iie, kyōto to ōsaka o kankō suru yotei desu."],
+     ["a","結構です。良いご旅行を。","Tudo certo. Boa viagem.","kekkō desu. yoi go-ryokō o."],
+     ["v","ありがとうございます。","Muito obrigado.","arigatō gozaimasu."]]
+  ]},
+  rest: { tip: "No Japão não se dá gorjeta. Em muitos restaurantes você paga no caixa, na saída, e não na mesa.", l: [
+    [["a","いらっしゃいませ。何名様ですか。","Bem-vindo. Quantas pessoas?","irasshaimase. nanmei-sama desu ka."],
+     ["v","二人です。","Duas pessoas.","futari desu."],
+     ["a","こちらがメニューです。お飲み物はいかがですか。","Aqui está o cardápio. Algo para beber?","kochira ga menyū desu. onomimono wa ikaga desu ka."],
+     ["v","お水をください。","Água, por favor.","omizu o kudasai."],
+     ["a","ご注文はお決まりですか。","Já decidiram o pedido?","gochūmon wa okimari desu ka."],
+     ["v","ラーメンを一つお願いします。","Um lámen, por favor.","rāmen o hitotsu onegai shimasu."],
+     ["a","以上でよろしいですか。","Só isso?","ijō de yoroshii desu ka."],
+     ["v","はい。お会計をお願いします。","Sim. A conta, por favor.","hai. okaikei o onegai shimasu."]],
+    [["a","ご予約はされていますか。","Vocês têm reserva?","goyoyaku wa sarete imasu ka."],
+     ["v","はい、八時にシルバで予約しています。","Sim, reservei para as oito no nome de Silva.","hai, hachiji ni shiruba de yoyaku shite imasu."],
+     ["a","辛さはどうしますか。","Qual nível de pimenta?","karasa wa dō shimasu ka."],
+     ["v","あまり辛くしないでください。","Não deixe muito apimentado, por favor.","amari karaku shinaide kudasai."],
+     ["a","ご飯は大盛りにしますか。","Quer porção grande de arroz?","gohan wa ōmori ni shimasu ka."],
+     ["v","普通でいいです。それと、ビールを一つください。","Normal está bom. E uma cerveja, por favor.","futsū de ii desu. sore to, bīru o hitotsu kudasai."],
+     ["a","お味はいかがですか。","O que acharam do sabor?","oaji wa ikaga desu ka."],
+     ["v","とてもおいしいです。ごちそうさまでした。","Muito gostoso. Obrigado pela refeição.","totemo oishii desu. gochisōsama deshita."]],
+    [["a","本日のおすすめはこちらになります。","Estas são as sugestões de hoje.","honjitsu no osusume wa kochira ni narimasu."],
+     ["v","どれが一番人気ですか。","Qual é o mais pedido?","dore ga ichiban ninki desu ka."],
+     ["a","季節の天ぷらと、刺身の盛り合わせが人気です。","O tempurá da estação e a seleção de sashimi são os mais pedidos.","kisetsu no tenpura to, sashimi no moriawase ga ninki desu."],
+     ["v","ナッツアレルギーがあるんですが、大丈夫ですか。","Tenho alergia a castanhas. Tudo bem?","nattsu arerugī ga arun desu ga, daijōbu desu ka."],
+     ["a","念のため、厨房に確認してまいります。","Por precaução, vou confirmar com a cozinha.","nen no tame, chūbō ni kakunin shite mairimasu."],
+     ["v","ありがとうございます。別々に払えますか。","Obrigado. Podemos pagar separado?","arigatō gozaimasu. betsubetsu ni haraemasu ka."],
+     ["a","はい、可能です。お支払いはレジでお願いします。","Sim, é possível. O pagamento é no caixa.","hai, kanō desu. oshiharai wa reji de onegai shimasu."],
+     ["v","カードは使えますか。","Aceita cartão?","kādo wa tsukaemasu ka."]]
+  ]}
+}
+};
+
+/* ===== Conteúdo v2: novos cenários, blocos (chunks) e perguntas de entrevista ===== */
+Object.assign(C.en, {
+  air: { tip: "Nos EUA, a maioria das companhias cobra a bagagem despachada à parte em voos domésticos. Chegue 2 horas antes no doméstico e 3 no internacional.", l: [
+    [["a","Hi, where are you flying today?","Oi, para onde você vai voar hoje?"],
+     ["v","To New York.","Para Nova York."],
+     ["a","Can I see your passport, please?","Posso ver seu passaporte, por favor?"],
+     ["v","Sure, here it is.","Claro, aqui está."],
+     ["a","Are you checking any bags?","Vai despachar alguma mala?"],
+     ["v","Yes, one bag.","Sim, uma mala."],
+     ["a","Window or aisle seat?","Janela ou corredor?"],
+     ["v","Window, please.","Janela, por favor."]],
+    [["a","Did you pack your bag yourself?","Você mesmo arrumou sua mala?"],
+     ["v","Yes, I did.","Sim, fui eu."],
+     ["a","Your bag is two pounds over the limit.","Sua mala passou duas libras (quase 1 kg) do limite."],
+     ["v","Can I move some things to my carry-on?","Posso passar algumas coisas para a mala de mão?"],
+     ["a","Sure. Here's your boarding pass. You're at gate B12.","Claro. Aqui está o cartão de embarque. Seu portão é o B12."],
+     ["v","What time does boarding start?","Que horas começa o embarque?"],
+     ["a","Boarding starts at ten fifteen.","O embarque começa às dez e quinze."],
+     ["v","Great. Is the flight on time?","Ótimo. O voo está no horário?"]],
+    [["a","I'm sorry, your connecting flight has been canceled.","Sinto muito, seu voo de conexão foi cancelado."],
+     ["v","Oh no. What are my options to get to Chicago today?","Ah, não. Quais são minhas opções para chegar a Chicago hoje?"],
+     ["a","I can rebook you on the six p.m. flight, or put you on standby for the earlier one.","Posso remarcar no voo das 18h ou colocar você na lista de espera do anterior."],
+     ["v","I'd rather take the six p.m. flight with a confirmed seat.","Prefiro o voo das 18h com assento confirmado."],
+     ["a","Done. Will you need a meal voucher while you wait?","Pronto. Vai precisar de um voucher de refeição enquanto espera?"],
+     ["v","Yes, please. And will my checked bag be transferred automatically?","Sim, por favor. E minha mala despachada vai ser transferida automaticamente?"],
+     ["a","Yes, it'll be rerouted to your new flight.","Sim, ela vai ser redirecionada para o novo voo."],
+     ["v","Thanks for your help. I really appreciate it.","Obrigado pela ajuda. Agradeço muito."]]
+  ]},
+  hotel: { tip: "Muitos hotéis nos EUA cobram uma 'resort fee' diária e bloqueiam uma caução no cartão no check-in. Pergunte o valor antes.", l: [
+    [["a","Hi, welcome. Checking in?","Olá, bem-vindo. Vai fazer check-in?"],
+     ["v","Yes. I have a reservation under Silva.","Sim. Tenho uma reserva no nome de Silva."],
+     ["a","Can I see your ID and a credit card?","Posso ver um documento e um cartão de crédito?"],
+     ["v","Here you go.","Aqui estão."],
+     ["a","You're in room 512. Here's your key.","Você está no quarto 512. Aqui está sua chave."],
+     ["v","What's the Wi-Fi password?","Qual é a senha do Wi-Fi?"],
+     ["a","It's on the card with your key.","Está no cartão junto com a chave."],
+     ["v","Thank you. What time is breakfast?","Obrigado. Que horas é o café da manhã?"]],
+    [["a","Front desk, how can I help you?","Recepção, como posso ajudar?"],
+     ["v","Hi, this is room 512. The air conditioning isn't working.","Oi, aqui é do quarto 512. O ar-condicionado não está funcionando."],
+     ["a","I'm sorry about that. I'll send someone up right away.","Sinto muito. Vou mandar alguém subir agora mesmo."],
+     ["v","Thanks. Could I also get some extra towels?","Obrigado. Pode mandar também umas toalhas extras?"],
+     ["a","Of course. Anything else?","Claro. Mais alguma coisa?"],
+     ["v","Is it possible to get a late checkout tomorrow?","É possível fazer o checkout mais tarde amanhã?"],
+     ["a","I can give you until one p.m. at no charge.","Posso deixar até as 13h sem custo."],
+     ["v","Perfect. Can you also store my luggage after that?","Perfeito. Vocês podem guardar minha bagagem depois disso?"]],
+    [["a","Good evening. How was your stay?","Boa noite. Como foi sua estadia?"],
+     ["v","Mostly good, but I noticed a charge on my bill that I don't recognize.","No geral boa, mas notei uma cobrança na conta que não reconheço."],
+     ["a","Let me take a look. That's the daily resort fee.","Deixe-me ver. É a taxa diária do resort."],
+     ["v","That wasn't mentioned when I booked. Could you remove it?","Isso não foi informado quando reservei. Pode retirar?"],
+     ["a","I'll check with my manager, but I can at least waive one night.","Vou ver com meu gerente, mas posso pelo menos isentar uma noite."],
+     ["v","I appreciate that. Also, the room next door was really noisy last night.","Agradeço. Além disso, o quarto ao lado estava bem barulhento ontem à noite."],
+     ["a","I'm so sorry. I'll make a note and take care of that fee entirely.","Sinto muito. Vou registrar e retirar essa taxa por completo."],
+     ["v","Thank you, that's very fair. Could you email me the final invoice?","Obrigado, é muito justo. Pode me mandar a fatura final por e-mail?"]]
+  ]},
+  shop: { tip: "Nos EUA o preço da etiqueta não inclui o imposto (sales tax), que é somado no caixa e muda de estado para estado. Guarde o recibo para trocas.", l: [
+    [["a","Hi, can I help you find anything?","Oi, posso ajudar a encontrar algo?"],
+     ["v","I'm just looking, thanks.","Só estou olhando, obrigado."],
+     ["a","Let me know if you need anything.","Me avise se precisar de algo."],
+     ["v","Do you have this in a medium?","Vocês têm este no tamanho M?"],
+     ["a","Yes, here you go. The fitting rooms are over there.","Sim, aqui está. Os provadores ficam ali."],
+     ["v","How much is it?","Quanto custa?"],
+     ["a","It's twenty-nine ninety-nine.","Custa 29,99."],
+     ["v","I'll take it.","Vou levar."]],
+    [["a","Did you find everything okay?","Encontrou tudo certo?"],
+     ["v","Yes, thanks. Is this on sale?","Sim, obrigado. Isto está em promoção?"],
+     ["a","Yes, it's thirty percent off at the register.","Sim, tem trinta por cento de desconto no caixa."],
+     ["v","Great. Can I pay with a credit card?","Ótimo. Posso pagar com cartão de crédito?"],
+     ["a","Sure. Just tap or insert your card.","Claro. É só aproximar ou inserir o cartão."],
+     ["v","Could I get a gift receipt, please?","Pode me dar um recibo para presente, por favor?"],
+     ["a","Of course. Would you like a bag?","Claro. Quer uma sacola?"],
+     ["v","No, thanks. I have one.","Não, obrigado. Eu tenho uma."]],
+    [["a","Hi, how can I help you today?","Oi, como posso ajudar hoje?"],
+     ["v","I'd like to return these shoes. They're too tight.","Gostaria de devolver estes sapatos. Estão apertados."],
+     ["a","Do you have the receipt?","Você tem o recibo?"],
+     ["v","Yes, here it is. I bought them three days ago.","Sim, aqui está. Comprei há três dias."],
+     ["a","Would you like a refund or an exchange?","Prefere reembolso ou troca?"],
+     ["v","Could I exchange them for a half size bigger?","Posso trocar por meio número maior?"],
+     ["a","We're out of that size here, but I can order it and ship it to your hotel.","Estamos sem esse tamanho aqui, mas posso pedir e enviar para seu hotel."],
+     ["v","I'm leaving on Friday, so I'd rather get a refund to my card.","Vou embora na sexta, então prefiro o reembolso no cartão."]]
+  ]},
+  transp: { tip: "Uber e Lyft funcionam em todo os EUA. No carro alugado, a gasolina é vendida por galão (3,8 litros) e as placas de velocidade estão em milhas por hora.", l: [
+    [["a","Hi, are you going to the airport?","Oi, você vai para o aeroporto?"],
+     ["v","Yes, that's me.","Sim, sou eu."],
+     ["a","Can I put your bag in the trunk?","Posso colocar sua mala no porta-malas?"],
+     ["v","Yes, thank you.","Sim, obrigado."],
+     ["a","Which terminal?","Qual terminal?"],
+     ["v","Terminal two, please.","Terminal dois, por favor."],
+     ["a","Here we are.","Chegamos."],
+     ["v","Thanks, have a good day.","Obrigado, tenha um bom dia."]],
+    [["a","Hi, where are you headed?","Oi, para onde você vai?"],
+     ["v","How do I get to Times Square from here?","Como chego à Times Square daqui?"],
+     ["a","Take the downtown train and get off at 42nd Street.","Pegue o trem sentido centro e desça na Rua 42."],
+     ["v","Where can I buy a ticket?","Onde posso comprar um bilhete?"],
+     ["a","You can just tap your credit card at the gate.","Você pode só aproximar o cartão de crédito na catraca."],
+     ["v","How long does it take?","Quanto tempo leva?"],
+     ["a","About fifteen minutes.","Uns quinze minutos."],
+     ["v","Thanks for the help.","Obrigado pela ajuda."]],
+    [["a","Would you like to add insurance to your rental?","Gostaria de incluir seguro no aluguel?"],
+     ["v","My credit card covers collision damage. Is liability included?","Meu cartão de crédito cobre danos ao carro. A responsabilidade civil está incluída?"],
+     ["a","Basic liability is included. Do you want the prepaid fuel option?","A responsabilidade básica está incluída. Quer a opção de combustível pré-pago?"],
+     ["v","No, I'll return it with a full tank.","Não, vou devolver com o tanque cheio."],
+     ["a","Okay. There are tolls on the highway. Do you want the toll pass?","Certo. Há pedágios na rodovia. Quer o passe de pedágio?"],
+     ["v","How much is it per day, and is there a cap?","Quanto custa por dia, e tem um teto?"],
+     ["a","It's eleven ninety-nine a day, capped at sixty dollars per rental.","Custa 11,99 por dia, com teto de 60 dólares por aluguel."],
+     ["v","Okay, I'll take it. Could you show me any scratches before I leave?","Certo, vou querer. Pode me mostrar os arranhões antes de eu sair?"]]
+  ]},
+  interview: { tip: "Em entrevistas nos EUA, responda com exemplos concretos e números. Use o método STAR: Situação, Tarefa, Ação e Resultado.", l: [
+    [["a","Hi, nice to meet you. Please, have a seat.","Olá, prazer em conhecer. Por favor, sente-se."],
+     ["v","Nice to meet you too. Thank you for having me.","Prazer também. Obrigado por me receber."],
+     ["a","Did you find us okay?","Encontrou o lugar facilmente?"],
+     ["v","Yes, it was easy to find.","Sim, foi fácil de achar."],
+     ["a","So, tell me about yourself.","Então, fale sobre você."],
+     ["v","I'm from Brazil and I have ten years of experience in my field.","Sou do Brasil e tenho dez anos de experiência na minha área."],
+     ["a","Why are you interested in this position?","Por que você se interessa por esta vaga?"],
+     ["v","I want to grow my career and work on an international team.","Quero crescer na carreira e trabalhar em uma equipe internacional."]],
+    [["a","What would you say is your greatest strength?","Qual você diria que é seu maior ponto forte?"],
+     ["v","I'm very organized and good at solving problems under pressure.","Sou muito organizado e bom em resolver problemas sob pressão."],
+     ["a","Can you give me an example?","Pode me dar um exemplo?"],
+     ["v","Last year I led a project that cut our monthly closing time by two days.","No ano passado, liderei um projeto que reduziu o fechamento mensal em dois dias."],
+     ["a","And what's one area you're working to improve?","E qual área você está trabalhando para melhorar?"],
+     ["v","Public speaking in English, so I practice every day.","Falar em público em inglês, por isso pratico todo dia."],
+     ["a","How do you handle disagreements with coworkers?","Como você lida com desacordos com colegas?"],
+     ["v","I listen first, then focus on the data and the goal we share.","Primeiro escuto, depois foco nos dados e no objetivo que temos em comum."]],
+    [["a","Tell me about a time you failed and what you learned.","Fale sobre uma vez em que você falhou e o que aprendeu."],
+     ["v","Early in my career I missed a deadline because I didn't ask for help soon enough.","No começo da carreira perdi um prazo por não pedir ajuda cedo o bastante."],
+     ["a","What did you do differently after that?","O que você fez diferente depois disso?"],
+     ["v","I started flagging risks early and breaking big tasks into weekly milestones.","Passei a sinalizar riscos cedo e dividir tarefas grandes em metas semanais."],
+     ["a","What are your salary expectations?","Qual é sua pretensão salarial?"],
+     ["v","Based on my research, I'm looking for something in the range of eighty to ninety thousand.","Com base na minha pesquisa, busco algo na faixa de oitenta a noventa mil."],
+     ["a","Do you have any questions for us?","Você tem alguma pergunta para nós?"],
+     ["v","Yes. What does success look like in this role after the first six months?","Sim. Como seria o sucesso nesta função depois dos primeiros seis meses?"]]
+  ]},
+  work: { tip: "Nos EUA, reuniões costumam começar com um pouco de small talk (fim de semana, clima, esportes). Evite política e salário.", l: [
+    [["a","Hi! How was your weekend?","Oi! Como foi seu fim de semana?"],
+     ["v","It was great, thanks. How about yours?","Foi ótimo, obrigado. E o seu?"],
+     ["a","Pretty relaxing. Are you ready for the meeting?","Bem tranquilo. Está pronto para a reunião?"],
+     ["v","Yes. What time does it start?","Sim. Que horas começa?"],
+     ["a","At ten, in conference room B.","Às dez, na sala de reunião B."],
+     ["v","Okay, see you there.","Certo, te vejo lá."],
+     ["a","Can you send me the report later?","Pode me mandar o relatório depois?"],
+     ["v","Sure, I'll send it this afternoon.","Claro, mando hoje à tarde."]],
+    [["a","Let's get started. Can you give us a quick update?","Vamos começar. Pode nos dar uma atualização rápida?"],
+     ["v","Sure. We finished the first phase, and we're on track for next week.","Claro. Terminamos a primeira fase e estamos no prazo para a semana que vem."],
+     ["a","Any blockers?","Algum impedimento?"],
+     ["v","We're still waiting for data from the sales team.","Ainda estamos esperando dados da equipe de vendas."],
+     ["a","I'll follow up with them today.","Vou cobrar deles hoje."],
+     ["v","Thanks. Sorry, could you repeat the deadline?","Obrigado. Desculpe, pode repetir o prazo?"],
+     ["a","Friday the fifteenth.","Sexta-feira, dia quinze."],
+     ["v","Got it. I'll send a summary after the meeting.","Entendido. Mando um resumo depois da reunião."]],
+    [["a","I'm not sure I agree with that approach.","Não sei se concordo com essa abordagem."],
+     ["v","That's fair. Could you walk me through your concerns?","Justo. Pode me explicar suas preocupações?"],
+     ["a","I think it'll take too long and go over budget.","Acho que vai demorar demais e estourar o orçamento."],
+     ["v","I see your point. What if we run a two-week pilot first?","Entendo seu ponto. E se fizermos um piloto de duas semanas primeiro?"],
+     ["a","That could work, as long as we track the costs closely.","Pode funcionar, desde que acompanhemos os custos de perto."],
+     ["v","Agreed. I'll put together a proposal and circle back by Wednesday.","Combinado. Vou montar uma proposta e retorno até quarta."],
+     ["a","Sounds good. Let's take this offline.","Parece bom. Vamos tratar disso fora da reunião."],
+     ["v","Perfect. I'll set up a quick call with just the two of us.","Perfeito. Vou marcar uma call rápida só nós dois."]]
+  ]},
+  chunks: [
+    ["Could I get ___?","Pode me dar / trazer ___?",[["Could I get the check, please?","Pode trazer a conta, por favor?"],["Could I get a window seat?","Pode me dar um assento na janela?"]]],
+    ["I'd like ___.","Eu gostaria de ___.",[["I'd like a table for two.","Eu gostaria de uma mesa para dois."],["I'd like to check in, please.","Eu gostaria de fazer o check-in, por favor."]]],
+    ["Do you have ___?","Vocês têm ___?",[["Do you have this in a large?","Vocês têm este no tamanho G?"],["Do you have any rooms available tonight?","Vocês têm quartos disponíveis hoje à noite?"]]],
+    ["Where is ___?","Onde fica ___?",[["Where is the restroom?","Onde fica o banheiro?"],["Where is gate B12?","Onde fica o portão B12?"]]],
+    ["How much is ___?","Quanto custa ___?",[["How much is this jacket?","Quanto custa esta jaqueta?"],["How much is it to the airport?","Quanto custa até o aeroporto?"]]],
+    ["Is there ___ near here?","Tem ___ aqui perto?",[["Is there a pharmacy near here?","Tem uma farmácia aqui perto?"],["Is there a subway station near here?","Tem uma estação de metrô aqui perto?"]]],
+    ["I'm looking for ___.","Estou procurando ___.",[["I'm looking for a gift for my girlfriend.","Estou procurando um presente para minha namorada."],["I'm looking for the train to downtown.","Estou procurando o trem para o centro."]]],
+    ["How do I get to ___?","Como chego a ___?",[["How do I get to Central Park?","Como chego ao Central Park?"],["How do I get to the hotel from here?","Como chego ao hotel daqui?"]]],
+    ["Sorry, could you ___?","Desculpe, poderia ___?",[["Sorry, could you repeat that?","Desculpe, pode repetir?"],["Sorry, could you speak more slowly?","Desculpe, pode falar mais devagar?"]]],
+    ["What time does ___?","Que horas ___?",[["What time does the museum open?","Que horas o museu abre?"],["What time does the last train leave?","Que horas sai o último trem?"]]],
+    ["Can you help me ___?","Pode me ajudar ___?",[["Can you help me with my bags?","Pode me ajudar com as malas?"],["Can you help me find this address?","Pode me ajudar a achar este endereço?"]]],
+    ["Do you mind if I ___?","Você se importa se eu ___?",[["Do you mind if I sit here?","Você se importa se eu sentar aqui?"],["Do you mind if I open the window?","Você se importa se eu abrir a janela?"]]],
+    ["I have a reservation ___.","Tenho uma reserva ___.",[["I have a reservation under Silva.","Tenho uma reserva no nome de Silva."],["I have a reservation for seven o'clock.","Tenho uma reserva para as sete horas."]]],
+    ["I have experience in ___.","Tenho experiência em ___.",[["I have experience in financial planning.","Tenho experiência em planejamento financeiro."],["I have experience in leading small teams.","Tenho experiência em liderar equipes pequenas."]]],
+    ["I'm interested in ___.","Tenho interesse em ___.",[["I'm interested in this position because I love solving problems.","Tenho interesse nesta vaga porque adoro resolver problemas."],["I'm interested in learning more about the team.","Tenho interesse em saber mais sobre a equipe."]]],
+    ["Let me ___.","Deixe-me ___.",[["Let me check and get back to you.","Deixe-me verificar e te dou um retorno."],["Let me make sure I understand.","Deixe-me ver se entendi."]]]
+  ],
+  questions: [
+    {id:"about",q:"Tell me about yourself.",pt:"Fale sobre você.",model:"I'm from Brazil and I have [number] years of experience in [area]. Right now I work at [company], where I'm responsible for [main responsibility]. I'm looking for a new challenge where I can grow and work with an international team."},
+    {id:"why",q:"Why do you want to work here?",pt:"Por que você quer trabalhar aqui?",model:"I really admire how your company [something you admire]. This role matches my experience in [area], and I'd like to help the team [goal]."},
+    {id:"strength",q:"What are your greatest strengths?",pt:"Quais são seus maiores pontos fortes?",model:"I'm organized and I stay calm under pressure. For example, at [company] I [achievement with a number]."},
+    {id:"weakness",q:"What is your biggest weakness?",pt:"Qual é seu maior ponto fraco?",model:"Sometimes I take on too many tasks myself. I'm learning to delegate more, and it has helped my team deliver faster."},
+    {id:"challenge",q:"Tell me about a challenge you faced at work.",pt:"Fale sobre um desafio que você enfrentou no trabalho.",model:"At [company], we had [problem]. My task was to [task]. I [what you did], and as a result we [result with a number]."},
+    {id:"leaving",q:"Why are you leaving your current job?",pt:"Por que você está saindo do emprego atual?",model:"I've learned a lot at my current job, but I'm ready for a bigger challenge and an international environment."},
+    {id:"five",q:"Where do you see yourself in five years?",pt:"Onde você se vê daqui a cinco anos?",model:"I see myself as a specialist in [area], leading projects and helping the company grow."},
+    {id:"salary",q:"What are your salary expectations?",pt:"Qual é sua pretensão salarial?",model:"Based on my research and experience, I'm looking for something in the range of [range]. But I'm open to discussing the full package."},
+    {id:"ask",q:"Do you have any questions for us?",pt:"Você tem alguma pergunta para nós?",model:"Yes. What does success look like in this role after the first six months?"}
+  ]
+});
+
+Object.assign(C.es, {
+  air: { tip: "Na Europa as companhias low cost (Ryanair, Vueling) são rígidas com o tamanho da bagagem de mão. Confira as medidas antes.", l: [
+    [["a","Hola. ¿A dónde viaja hoy?","Olá. Para onde viaja hoje?"],
+     ["v","A Barcelona.","Para Barcelona."],
+     ["a","Su pasaporte, por favor.","Seu passaporte, por favor."],
+     ["v","Aquí tiene.","Aqui está."],
+     ["a","¿Va a facturar alguna maleta?","Vai despachar alguma mala?"],
+     ["v","Sí, una maleta.","Sim, uma mala."],
+     ["a","¿Ventanilla o pasillo?","Janela ou corredor?"],
+     ["v","Ventanilla, por favor.","Janela, por favor."]],
+    [["a","Su maleta pesa dos kilos de más.","Sua mala está com dois quilos a mais."],
+     ["v","¿Puedo pasar algunas cosas al equipaje de mano?","Posso passar algumas coisas para a bagagem de mão?"],
+     ["a","Claro. Aquí tiene su tarjeta de embarque.","Claro. Aqui está seu cartão de embarque."],
+     ["v","¿Cuál es la puerta de embarque?","Qual é o portão de embarque?"],
+     ["a","La puerta B12. El embarque empieza a las diez.","Portão B12. O embarque começa às dez."],
+     ["v","¿El vuelo sale a su hora?","O voo sai no horário?"],
+     ["a","Por ahora sí, pero revise las pantallas.","Por enquanto sim, mas confira os painéis."],
+     ["v","Vale, muchas gracias.","Certo, muito obrigado."]],
+    [["a","Lo siento, su vuelo de conexión ha sido cancelado.","Sinto muito, seu voo de conexão foi cancelado."],
+     ["v","Vaya. ¿Qué opciones tengo para llegar hoy a Sevilla?","Puxa. Que opções tenho para chegar hoje a Sevilha?"],
+     ["a","Puedo cambiarle al vuelo de las seis o ponerle en lista de espera.","Posso trocar para o voo das seis ou colocar você na lista de espera."],
+     ["v","Prefiero el vuelo de las seis con plaza confirmada.","Prefiro o voo das seis com lugar confirmado."],
+     ["a","Hecho. ¿Necesita un vale para comer mientras espera?","Feito. Precisa de um vale para comer enquanto espera?"],
+     ["v","Sí, por favor. ¿Y mi maleta se transfiere automáticamente?","Sim, por favor. E minha mala é transferida automaticamente?"],
+     ["a","Sí, irá directamente a su nuevo vuelo.","Sim, vai direto para o novo voo."],
+     ["v","Muchas gracias por su ayuda.","Muito obrigado pela ajuda."]]
+  ]},
+  hotel: { tip: "Em cidades como Barcelona há taxa turística por noite, cobrada no hotel. Pergunte se já está incluída.", l: [
+    [["a","Buenas tardes. ¿Tiene reserva?","Boa tarde. Tem reserva?"],
+     ["v","Sí, a nombre de Silva.","Sim, no nome de Silva."],
+     ["a","¿Me deja su pasaporte?","Pode me passar seu passaporte?"],
+     ["v","Sí, aquí tiene.","Sim, aqui está."],
+     ["a","Su habitación es la 512. Aquí tiene la llave.","Seu quarto é o 512. Aqui está a chave."],
+     ["v","¿Cuál es la contraseña del wifi?","Qual é a senha do wi-fi?"],
+     ["a","Está en la tarjeta de la llave.","Está no cartão da chave."],
+     ["v","Gracias. ¿A qué hora es el desayuno?","Obrigado. Que horas é o café da manhã?"]],
+    [["a","Recepción, ¿dígame?","Recepção, pois não?"],
+     ["v","Hola, llamo de la 512. El aire acondicionado no funciona.","Olá, ligo do 512. O ar-condicionado não funciona."],
+     ["a","Lo siento. Ahora mismo subimos a revisarlo.","Sinto muito. Subimos agora para verificar."],
+     ["v","Gracias. ¿Me pueden traer más toallas?","Obrigado. Podem me trazer mais toalhas?"],
+     ["a","Por supuesto. ¿Algo más?","Claro. Mais alguma coisa?"],
+     ["v","¿Es posible dejar la habitación más tarde mañana?","É possível deixar o quarto mais tarde amanhã?"],
+     ["a","Le puedo dar hasta la una sin coste.","Posso deixar até a uma, sem custo."],
+     ["v","Perfecto. ¿Y me guardan el equipaje después?","Perfeito. E vocês guardam minha bagagem depois?"]],
+    [["a","Buenas noches. ¿Qué tal la estancia?","Boa noite. Como foi a estadia?"],
+     ["v","Bien en general, pero hay un cargo en la factura que no reconozco.","Boa no geral, mas há uma cobrança na fatura que não reconheço."],
+     ["a","Déjeme ver. Es la tasa turística por noche.","Deixe-me ver. É a taxa turística por noite."],
+     ["v","Entiendo. ¿Y este cargo del minibar? No consumí nada.","Entendo. E esta cobrança do frigobar? Não consumi nada."],
+     ["a","Tiene razón, debe de ser un error. Lo quito ahora mismo.","Tem razão, deve ser um erro. Retiro agora mesmo."],
+     ["v","Gracias. Además, anoche la habitación de al lado hizo mucho ruido.","Obrigado. Além disso, ontem à noite o quarto ao lado fez muito barulho."],
+     ["a","Lo siento mucho. Le invitamos al desayuno de hoy.","Sinto muito. O café da manhã de hoje é por nossa conta."],
+     ["v","Muy amable. ¿Me envía la factura por correo electrónico?","Muito gentil. Pode me mandar a fatura por e-mail?"]]
+  ]},
+  chunks: [
+    ["¿Me trae ___?","Pode me trazer ___?",[["¿Me trae la cuenta, por favor?","Pode me trazer a conta, por favor?"],["¿Me trae un café con leche?","Pode me trazer um café com leite?"]]],
+    ["Quería ___.","Eu queria ___.",[["Quería una mesa para dos.","Eu queria uma mesa para dois."],["Quería cambiar dinero.","Eu queria trocar dinheiro."]]],
+    ["¿Tiene ___?","Tem ___?",[["¿Tiene esta camisa en talla M?","Tem esta camisa no tamanho M?"],["¿Tiene habitaciones libres para esta noche?","Tem quartos livres para hoje à noite?"]]],
+    ["¿Dónde está ___?","Onde fica ___?",[["¿Dónde está el baño?","Onde fica o banheiro?"],["¿Dónde está la parada de metro?","Onde fica a estação do metrô?"]]],
+    ["¿Cuánto cuesta ___?","Quanto custa ___?",[["¿Cuánto cuesta esta chaqueta?","Quanto custa esta jaqueta?"],["¿Cuánto cuesta un taxi al aeropuerto?","Quanto custa um táxi até o aeroporto?"]]],
+    ["¿Hay ___ por aquí?","Tem ___ por aqui?",[["¿Hay una farmacia por aquí?","Tem uma farmácia por aqui?"],["¿Hay un cajero por aquí?","Tem um caixa eletrônico por aqui?"]]],
+    ["¿Cómo llego a ___?","Como chego a ___?",[["¿Cómo llego a la Sagrada Familia?","Como chego à Sagrada Família?"],["¿Cómo llego al hotel desde aquí?","Como chego ao hotel daqui?"]]],
+    ["Perdone, ¿puede ___?","Desculpe, pode ___?",[["Perdone, ¿puede repetirlo?","Desculpe, pode repetir?"],["Perdone, ¿puede hablar más despacio?","Desculpe, pode falar mais devagar?"]]]
+  ]
+});
+
+Object.assign(C.it, {
+  air: { tip: "Nas low cost, a bagagem de mão costuma ser medida no portão. Nos trens regionais italianos, valide o bilhete antes de embarcar.", l: [
+    [["a","Buongiorno. Dove va oggi?","Bom dia. Para onde vai hoje?"],
+     ["v","A Milano.","Para Milão."],
+     ["a","Passaporto, per favore.","Passaporte, por favor."],
+     ["v","Ecco a lei.","Aqui está."],
+     ["a","Ha bagagli da imbarcare?","Tem bagagem para despachar?"],
+     ["v","Sì, una valigia.","Sim, uma mala."],
+     ["a","Finestrino o corridoio?","Janela ou corredor?"],
+     ["v","Finestrino, per favore.","Janela, por favor."]],
+    [["a","La sua valigia pesa due chili in più.","Sua mala está com dois quilos a mais."],
+     ["v","Posso spostare qualcosa nel bagaglio a mano?","Posso passar algo para a bagagem de mão?"],
+     ["a","Certo. Ecco la carta d'imbarco.","Claro. Aqui está o cartão de embarque."],
+     ["v","Qual è il gate?","Qual é o portão?"],
+     ["a","Il gate B12. L'imbarco inizia alle dieci.","Portão B12. O embarque começa às dez."],
+     ["v","Il volo è in orario?","O voo está no horário?"],
+     ["a","Per ora sì, ma controlli i monitor.","Por enquanto sim, mas confira os monitores."],
+     ["v","Va bene, grazie mille.","Tudo bem, muito obrigado."]],
+    [["a","Mi dispiace, il suo volo in coincidenza è stato cancellato.","Sinto muito, seu voo de conexão foi cancelado."],
+     ["v","Accidenti. Che alternative ho per arrivare a Napoli oggi?","Puxa. Que alternativas tenho para chegar a Nápoles hoje?"],
+     ["a","Posso spostarla sul volo delle diciotto o metterla in lista d'attesa.","Posso passar você para o voo das 18h ou colocar na lista de espera."],
+     ["v","Preferisco il volo delle diciotto con il posto confermato.","Prefiro o voo das 18h com lugar confirmado."],
+     ["a","Fatto. Le serve un buono pasto per l'attesa?","Feito. Precisa de um vale-refeição para a espera?"],
+     ["v","Sì, grazie. E il bagaglio viene trasferito automaticamente?","Sim, obrigado. E a bagagem é transferida automaticamente?"],
+     ["a","Sì, andrà direttamente sul nuovo volo.","Sim, vai direto para o novo voo."],
+     ["v","La ringrazio molto per l'aiuto.","Agradeço muito pela ajuda."]]
+  ]},
+  hotel: { tip: "Na Itália a 'tassa di soggiorno' (taxa turística) costuma ser paga à parte no hotel, muitas vezes em dinheiro.", l: [
+    [["a","Buonasera. Ha una prenotazione?","Boa noite. Tem reserva?"],
+     ["v","Sì, a nome Silva.","Sim, no nome de Silva."],
+     ["a","Mi dà un documento, per favore?","Pode me dar um documento, por favor?"],
+     ["v","Ecco il passaporto.","Aqui está o passaporte."],
+     ["a","La sua camera è la 512. Ecco la chiave.","Seu quarto é o 512. Aqui está a chave."],
+     ["v","Qual è la password del wifi?","Qual é a senha do wi-fi?"],
+     ["a","È scritta sul biglietto della chiave.","Está escrita no cartão da chave."],
+     ["v","Grazie. A che ora è la colazione?","Obrigado. Que horas é o café da manhã?"]],
+    [["a","Reception, mi dica.","Recepção, pois não."],
+     ["v","Buongiorno, chiamo dalla 512. L'aria condizionata non funziona.","Bom dia, ligo do 512. O ar-condicionado não funciona."],
+     ["a","Mi dispiace. Mando subito qualcuno.","Sinto muito. Mando alguém agora."],
+     ["v","Grazie. Potrei avere degli asciugamani in più?","Obrigado. Poderia ter mais toalhas?"],
+     ["a","Certamente. Altro?","Certamente. Mais alguma coisa?"],
+     ["v","Domani è possibile lasciare la camera più tardi?","Amanhã é possível deixar o quarto mais tarde?"],
+     ["a","Posso darle fino all'una senza costi.","Posso deixar até a uma, sem custo."],
+     ["v","Perfetto. Poi potete tenermi i bagagli?","Perfeito. Depois vocês podem guardar minha bagagem?"]],
+    [["a","Buonasera. Com'è andato il soggiorno?","Boa noite. Como foi a estadia?"],
+     ["v","Bene, ma nel conto c'è un addebito che non riconosco.","Bem, mas na conta há uma cobrança que não reconheço."],
+     ["a","Vediamo. È la tassa di soggiorno.","Vejamos. É a taxa de estadia."],
+     ["v","Capisco. E questo del minibar? Non ho preso niente.","Entendo. E esta do frigobar? Não peguei nada."],
+     ["a","Ha ragione, sarà un errore. Lo tolgo subito.","Tem razão, deve ser um erro. Tiro agora."],
+     ["v","Grazie. Inoltre, ieri sera la camera accanto era molto rumorosa.","Obrigado. Além disso, ontem à noite o quarto ao lado estava muito barulhento."],
+     ["a","Mi dispiace molto. Le offriamo la colazione di oggi.","Sinto muito. Oferecemos o café da manhã de hoje."],
+     ["v","Molto gentile. Mi può mandare la fattura via email?","Muito gentil. Pode me mandar a fatura por e-mail?"]]
+  ]},
+  chunks: [
+    ["Mi porta ___?","Pode me trazer ___?",[["Mi porta il conto, per favore?","Pode me trazer a conta, por favor?"],["Mi porta un'altra acqua?","Pode me trazer outra água?"]]],
+    ["Vorrei ___.","Eu queria ___.",[["Vorrei un tavolo per due.","Eu queria uma mesa para dois."],["Vorrei un biglietto per Firenze.","Eu queria uma passagem para Florença."]]],
+    ["Avete ___?","Vocês têm ___?",[["Avete questa maglia in taglia M?","Vocês têm esta blusa no tamanho M?"],["Avete una camera libera per stanotte?","Vocês têm um quarto livre para hoje à noite?"]]],
+    ["Dov'è ___?","Onde fica ___?",[["Dov'è il bagno?","Onde fica o banheiro?"],["Dov'è la fermata dell'autobus?","Onde fica o ponto de ônibus?"]]],
+    ["Quanto costa ___?","Quanto custa ___?",[["Quanto costa questa borsa?","Quanto custa esta bolsa?"],["Quanto costa un taxi per l'aeroporto?","Quanto custa um táxi até o aeroporto?"]]],
+    ["C'è ___ qui vicino?","Tem ___ aqui perto?",[["C'è una farmacia qui vicino?","Tem uma farmácia aqui perto?"],["C'è un bancomat qui vicino?","Tem um caixa eletrônico aqui perto?"]]],
+    ["Come arrivo a ___?","Como chego a ___?",[["Come arrivo al Colosseo?","Como chego ao Coliseu?"],["Come arrivo all'albergo da qui?","Como chego ao hotel daqui?"]]],
+    ["Scusi, può ___?","Desculpe, pode ___?",[["Scusi, può ripetere?","Desculpe, pode repetir?"],["Scusi, può parlare più piano?","Desculpe, pode falar mais devagar?"]]]
+  ]
+});
+
+Object.assign(C.fr, {
+  air: { tip: "Nos aeroportos de Paris os avisos são em francês e inglês. 'Embarquement immédiat' quer dizer que o embarque já está fechando.", l: [
+    [["a","Bonjour. Vous allez où aujourd'hui ?","Bom dia. Para onde vai hoje?"],
+     ["v","À Nice.","Para Nice."],
+     ["a","Votre passeport, s'il vous plaît.","Seu passaporte, por favor."],
+     ["v","Le voici.","Aqui está."],
+     ["a","Vous avez des bagages à enregistrer ?","Tem bagagem para despachar?"],
+     ["v","Oui, une valise.","Sim, uma mala."],
+     ["a","Hublot ou couloir ?","Janela ou corredor?"],
+     ["v","Hublot, s'il vous plaît.","Janela, por favor."]],
+    [["a","Votre valise a deux kilos de trop.","Sua mala tem dois quilos a mais."],
+     ["v","Je peux mettre des affaires dans mon bagage cabine ?","Posso colocar umas coisas na bagagem de mão?"],
+     ["a","Bien sûr. Voici votre carte d'embarquement.","Claro. Aqui está seu cartão de embarque."],
+     ["v","C'est quelle porte ?","Qual é o portão?"],
+     ["a","La porte B12. L'embarquement commence à dix heures.","Portão B12. O embarque começa às dez."],
+     ["v","Le vol est à l'heure ?","O voo está no horário?"],
+     ["a","Pour l'instant, oui, mais regardez les écrans.","Por enquanto sim, mas olhe os painéis."],
+     ["v","D'accord, merci beaucoup.","Certo, muito obrigado."]],
+    [["a","Je suis désolé, votre vol de correspondance a été annulé.","Sinto muito, seu voo de conexão foi cancelado."],
+     ["v","Oh non. Quelles sont mes options pour arriver à Lyon aujourd'hui ?","Ah, não. Quais são minhas opções para chegar a Lyon hoje?"],
+     ["a","Je peux vous mettre sur le vol de dix-huit heures ou en liste d'attente.","Posso colocar você no voo das 18h ou na lista de espera."],
+     ["v","Je préfère le vol de dix-huit heures avec une place confirmée.","Prefiro o voo das 18h com lugar confirmado."],
+     ["a","C'est fait. Vous voulez un bon repas pour l'attente ?","Feito. Quer um vale-refeição para a espera?"],
+     ["v","Oui, merci. Et ma valise sera transférée automatiquement ?","Sim, obrigado. E minha mala vai ser transferida automaticamente?"],
+     ["a","Oui, elle ira directement sur votre nouveau vol.","Sim, vai direto para o novo voo."],
+     ["v","Merci beaucoup pour votre aide.","Muito obrigado pela ajuda."]]
+  ]},
+  hotel: { tip: "Na França a 'taxe de séjour' é cobrada por pessoa e por noite. O café da manhã do hotel geralmente é pago à parte.", l: [
+    [["a","Bonsoir. Vous avez une réservation ?","Boa noite. Tem reserva?"],
+     ["v","Oui, au nom de Silva.","Sim, no nome de Silva."],
+     ["a","Une pièce d'identité, s'il vous plaît.","Um documento, por favor."],
+     ["v","Voici mon passeport.","Aqui está meu passaporte."],
+     ["a","Vous êtes dans la chambre 512. Voici la clé.","Você está no quarto 512. Aqui está a chave."],
+     ["v","Quel est le code du wifi ?","Qual é a senha do wi-fi?"],
+     ["a","Il est sur la carte avec la clé.","Está no cartão junto com a chave."],
+     ["v","Merci. Le petit-déjeuner est à quelle heure ?","Obrigado. Que horas é o café da manhã?"]],
+    [["a","Réception, bonjour.","Recepção, bom dia."],
+     ["v","Bonjour, c'est la chambre 512. La climatisation ne marche pas.","Bom dia, aqui é o quarto 512. O ar-condicionado não funciona."],
+     ["a","Je suis désolé. J'envoie quelqu'un tout de suite.","Sinto muito. Mando alguém agora."],
+     ["v","Merci. Je pourrais avoir des serviettes en plus ?","Obrigado. Poderia ter mais toalhas?"],
+     ["a","Bien sûr. Autre chose ?","Claro. Mais alguma coisa?"],
+     ["v","Est-ce que je peux libérer la chambre plus tard demain ?","Posso deixar o quarto mais tarde amanhã?"],
+     ["a","Je peux vous laisser jusqu'à treize heures sans frais.","Posso deixar até as 13h sem custo."],
+     ["v","Parfait. Vous pouvez garder mes bagages après ?","Perfeito. Vocês podem guardar minha bagagem depois?"]],
+    [["a","Bonsoir. Votre séjour s'est bien passé ?","Boa noite. A estadia foi boa?"],
+     ["v","Oui, mais il y a un montant sur la facture que je ne reconnais pas.","Sim, mas há um valor na fatura que não reconheço."],
+     ["a","Je regarde. C'est la taxe de séjour.","Vou ver. É a taxa de estadia."],
+     ["v","D'accord. Et ce montant du minibar ? Je n'ai rien pris.","Certo. E este valor do frigobar? Não peguei nada."],
+     ["a","Vous avez raison, c'est sûrement une erreur. Je l'enlève.","Tem razão, deve ser um erro. Vou retirar."],
+     ["v","Merci. Aussi, la chambre d'à côté était très bruyante hier soir.","Obrigado. Além disso, o quarto ao lado estava muito barulhento ontem à noite."],
+     ["a","Je suis vraiment désolé. Le petit-déjeuner d'aujourd'hui est offert.","Sinto muito mesmo. O café da manhã de hoje é cortesia."],
+     ["v","C'est gentil. Vous pouvez m'envoyer la facture par e-mail ?","Muito gentil. Pode me mandar a fatura por e-mail?"]]
+  ]},
+  chunks: [
+    ["Je pourrais avoir ___ ?","Poderia me dar ___?",[["Je pourrais avoir l'addition, s'il vous plaît ?","Poderia me trazer a conta, por favor?"],["Je pourrais avoir un plan de la ville ?","Poderia me dar um mapa da cidade?"]]],
+    ["Je voudrais ___.","Eu queria ___.",[["Je voudrais une table pour deux.","Eu queria uma mesa para dois."],["Je voudrais un billet pour Lyon.","Eu queria uma passagem para Lyon."]]],
+    ["Vous avez ___ ?","Vocês têm ___?",[["Vous avez cette chemise en M ?","Vocês têm esta camisa no M?"],["Vous avez une chambre pour ce soir ?","Vocês têm um quarto para hoje à noite?"]]],
+    ["Où est ___ ?","Onde fica ___?",[["Où est la station de métro ?","Onde fica a estação de metrô?"],["Où est la sortie ?","Onde fica a saída?"]]],
+    ["Combien coûte ___ ?","Quanto custa ___?",[["Combien coûte ce sac ?","Quanto custa esta bolsa?"],["Combien coûte un taxi pour l'aéroport ?","Quanto custa um táxi até o aeroporto?"]]],
+    ["Il y a ___ près d'ici ?","Tem ___ aqui perto?",[["Il y a une pharmacie près d'ici ?","Tem uma farmácia aqui perto?"],["Il y a un distributeur près d'ici ?","Tem um caixa eletrônico aqui perto?"]]],
+    ["Comment aller à ___ ?","Como chego a ___?",[["Comment aller à la tour Eiffel ?","Como chego à Torre Eiffel?"],["Comment aller à l'hôtel d'ici ?","Como chego ao hotel daqui?"]]],
+    ["Pardon, vous pouvez ___ ?","Desculpe, pode ___?",[["Pardon, vous pouvez répéter ?","Desculpe, pode repetir?"],["Pardon, vous pouvez parler plus lentement ?","Desculpe, pode falar mais devagar?"]]]
+  ]
+});
+
+Object.assign(C.de, {
+  air: { tip: "Nos aeroportos alemães o portão fecha cerca de 20 minutos antes da partida, e a pontualidade é levada a sério.", l: [
+    [["a","Guten Tag. Wohin fliegen Sie heute?","Bom dia. Para onde voa hoje?"],
+     ["v","Nach München.","Para Munique."],
+     ["a","Ihren Reisepass, bitte.","Seu passaporte, por favor."],
+     ["v","Bitte schön.","Aqui está."],
+     ["a","Möchten Sie Gepäck aufgeben?","Deseja despachar bagagem?"],
+     ["v","Ja, einen Koffer.","Sim, uma mala."],
+     ["a","Fenster oder Gang?","Janela ou corredor?"],
+     ["v","Fenster, bitte.","Janela, por favor."]],
+    [["a","Ihr Koffer hat zwei Kilo Übergewicht.","Sua mala tem dois quilos de excesso."],
+     ["v","Kann ich etwas ins Handgepäck umpacken?","Posso passar algo para a bagagem de mão?"],
+     ["a","Natürlich. Hier ist Ihre Bordkarte.","Claro. Aqui está seu cartão de embarque."],
+     ["v","Welches Gate ist es?","Qual é o portão?"],
+     ["a","Gate B12. Das Boarding beginnt um zehn Uhr.","Portão B12. O embarque começa às dez."],
+     ["v","Ist der Flug pünktlich?","O voo está no horário?"],
+     ["a","Im Moment ja, aber schauen Sie auf die Anzeigetafel.","No momento sim, mas olhe o painel."],
+     ["v","Alles klar, vielen Dank.","Certo, muito obrigado."]],
+    [["a","Es tut mir leid, Ihr Anschlussflug wurde annulliert.","Sinto muito, seu voo de conexão foi cancelado."],
+     ["v","Oh nein. Wie komme ich heute noch nach Hamburg?","Ah, não. Como chego a Hamburgo ainda hoje?"],
+     ["a","Ich kann Sie auf den Flug um achtzehn Uhr umbuchen oder auf die Warteliste setzen.","Posso remarcar você no voo das 18h ou colocar na lista de espera."],
+     ["v","Ich nehme lieber den Flug um achtzehn Uhr mit festem Platz.","Prefiro o voo das 18h com lugar garantido."],
+     ["a","Erledigt. Brauchen Sie einen Essensgutschein für die Wartezeit?","Feito. Precisa de um vale-refeição para a espera?"],
+     ["v","Ja, bitte. Wird mein Koffer automatisch umgeladen?","Sim, por favor. Minha mala vai ser transferida automaticamente?"],
+     ["a","Ja, er geht direkt auf Ihren neuen Flug.","Sim, vai direto para o seu novo voo."],
+     ["v","Vielen Dank für Ihre Hilfe.","Muito obrigado pela ajuda."]]
+  ]},
+  hotel: { tip: "Muitas cidades alemãs cobram uma 'City-Tax' por noite. O café da manhã (Frühstück) nem sempre está incluído: confira na reserva.", l: [
+    [["a","Guten Abend. Haben Sie reserviert?","Boa noite. Tem reserva?"],
+     ["v","Ja, auf den Namen Silva.","Sim, no nome de Silva."],
+     ["a","Ihren Ausweis, bitte.","Seu documento, por favor."],
+     ["v","Hier ist mein Reisepass.","Aqui está meu passaporte."],
+     ["a","Sie haben Zimmer 512. Hier ist Ihre Schlüsselkarte.","Você está no quarto 512. Aqui está seu cartão-chave."],
+     ["v","Wie lautet das WLAN-Passwort?","Qual é a senha do wi-fi?"],
+     ["a","Es steht auf der Karte.","Está no cartão."],
+     ["v","Danke. Wann gibt es Frühstück?","Obrigado. Quando é o café da manhã?"]],
+    [["a","Rezeption, was kann ich für Sie tun?","Recepção, em que posso ajudar?"],
+     ["v","Hallo, hier ist Zimmer 512. Die Klimaanlage funktioniert nicht.","Olá, aqui é o quarto 512. O ar-condicionado não funciona."],
+     ["a","Das tut mir leid. Ich schicke sofort jemanden.","Sinto muito. Mando alguém agora."],
+     ["v","Danke. Könnte ich noch ein paar Handtücher bekommen?","Obrigado. Poderia receber mais algumas toalhas?"],
+     ["a","Natürlich. Sonst noch etwas?","Claro. Mais alguma coisa?"],
+     ["v","Ist morgen ein später Check-out möglich?","Amanhã é possível fazer check-out mais tarde?"],
+     ["a","Bis dreizehn Uhr geht es ohne Aufpreis.","Até as 13h é possível sem custo extra."],
+     ["v","Perfekt. Können Sie danach mein Gepäck aufbewahren?","Perfeito. Podem guardar minha bagagem depois?"]],
+    [["a","Guten Abend. Wie war Ihr Aufenthalt?","Boa noite. Como foi sua estadia?"],
+     ["v","Gut, aber auf der Rechnung ist ein Betrag, den ich nicht kenne.","Boa, mas na conta tem um valor que não reconheço."],
+     ["a","Moment, das ist die City-Tax pro Nacht.","Um momento, é a taxa municipal por noite."],
+     ["v","Verstehe. Und was ist mit der Minibar? Ich habe nichts genommen.","Entendo. E o frigobar? Não peguei nada."],
+     ["a","Sie haben recht, das ist ein Fehler. Ich storniere es sofort.","Tem razão, é um erro. Cancelo agora."],
+     ["v","Danke. Außerdem war das Nachbarzimmer gestern sehr laut.","Obrigado. Além disso, o quarto vizinho estava muito barulhento ontem."],
+     ["a","Das tut mir sehr leid. Das Frühstück heute geht aufs Haus.","Sinto muito. O café da manhã de hoje é por conta da casa."],
+     ["v","Sehr nett. Können Sie mir die Rechnung per E-Mail schicken?","Muito gentil. Pode me mandar a conta por e-mail?"]]
+  ]},
+  chunks: [
+    ["Könnte ich ___ haben?","Poderia me dar ___?",[["Könnte ich die Rechnung haben?","Poderia me trazer a conta?"],["Könnte ich einen Stadtplan haben?","Poderia me dar um mapa da cidade?"]]],
+    ["Ich hätte gern ___.","Eu gostaria de ___.",[["Ich hätte gern einen Tisch für zwei.","Eu gostaria de uma mesa para dois."],["Ich hätte gern eine Fahrkarte nach Berlin.","Eu gostaria de uma passagem para Berlim."]]],
+    ["Haben Sie ___?","Vocês têm ___?",[["Haben Sie das in Größe M?","Vocês têm isso no tamanho M?"],["Haben Sie ein Zimmer für heute Nacht?","Vocês têm um quarto para hoje à noite?"]]],
+    ["Wo ist ___?","Onde fica ___?",[["Wo ist die Toilette?","Onde fica o banheiro?"],["Wo ist die U-Bahn-Station?","Onde fica a estação de metrô?"]]],
+    ["Was kostet ___?","Quanto custa ___?",[["Was kostet diese Jacke?","Quanto custa esta jaqueta?"],["Was kostet ein Taxi zum Flughafen?","Quanto custa um táxi até o aeroporto?"]]],
+    ["Gibt es hier in der Nähe ___?","Tem ___ aqui perto?",[["Gibt es hier in der Nähe eine Apotheke?","Tem uma farmácia aqui perto?"],["Gibt es hier in der Nähe einen Geldautomaten?","Tem um caixa eletrônico aqui perto?"]]],
+    ["Wie komme ich zu ___?","Como chego a ___?",[["Wie komme ich zum Brandenburger Tor?","Como chego ao Portão de Brandemburgo?"],["Wie komme ich zum Hotel?","Como chego ao hotel?"]]],
+    ["Entschuldigung, können Sie ___?","Desculpe, pode ___?",[["Entschuldigung, können Sie das wiederholen?","Desculpe, pode repetir?"],["Entschuldigung, können Sie langsamer sprechen?","Desculpe, pode falar mais devagar?"]]]
+  ]
+});
+
+Object.assign(C.ja, {
+  air: { tip: "No Japão os voos são muito pontuais. Objetos esquecidos costumam ser devolvidos: procure o balcão de achados e perdidos (忘れ物, wasuremono).", l: [
+    [["a","こんにちは。どちらまでですか。","Olá. Para onde vai?","konnichiwa. dochira made desu ka."],
+     ["v","大阪までです。","Para Osaka.","ōsaka made desu."],
+     ["a","パスポートをお願いします。","Passaporte, por favor.","pasupōto o onegai shimasu."],
+     ["v","はい、どうぞ。","Sim, aqui está.","hai, dōzo."],
+     ["a","お預けになる荷物はありますか。","Tem bagagem para despachar?","oazuke ni naru nimotsu wa arimasu ka."],
+     ["v","はい、スーツケースが一つです。","Sim, uma mala.","hai, sūtsukēsu ga hitotsu desu."],
+     ["a","窓側と通路側、どちらがいいですか。","Janela ou corredor, qual prefere?","madogawa to tsūrogawa, dochira ga ii desu ka."],
+     ["v","窓側をお願いします。","Janela, por favor.","madogawa o onegai shimasu."]],
+    [["a","お荷物が二キロ超過しています。","Sua bagagem está dois quilos acima do limite.","onimotsu ga ni-kiro chōka shite imasu."],
+     ["v","手荷物に移してもいいですか。","Posso passar para a bagagem de mão?","tenimotsu ni utsushite mo ii desu ka."],
+     ["a","はい、どうぞ。こちらが搭乗券です。","Sim, pode. Aqui está o cartão de embarque.","hai, dōzo. kochira ga tōjōken desu."],
+     ["v","搭乗口は何番ですか。","Qual é o número do portão?","tōjōguchi wa nanban desu ka."],
+     ["a","十二番です。搭乗は十時からです。","É o 12. O embarque começa às dez.","jūni-ban desu. tōjō wa jūji kara desu."],
+     ["v","飛行機は予定通りですか。","O voo está no horário?","hikōki wa yotei dōri desu ka."],
+     ["a","はい、今のところ予定通りです。","Sim, por enquanto está no horário.","hai, ima no tokoro yotei dōri desu."],
+     ["v","わかりました。ありがとうございます。","Entendi. Muito obrigado.","wakarimashita. arigatō gozaimasu."]],
+    [["a","申し訳ございません。乗り継ぎ便が欠航になりました。","Lamentamos. O voo de conexão foi cancelado.","mōshiwake gozaimasen. noritsugi-bin ga kekkō ni narimashita."],
+     ["v","困りました。今日中に札幌へ行く方法はありますか。","Que problema. Há como chegar a Sapporo ainda hoje?","komarimashita. kyōjū ni sapporo e iku hōhō wa arimasu ka."],
+     ["a","十八時の便に変更するか、キャンセル待ちができます。","Posso trocar para o voo das 18h ou colocar na lista de espera.","jūhachiji no bin ni henkō suru ka, kyanseru machi ga dekimasu."],
+     ["v","確実に座席がある十八時の便にしてください。","Prefiro o voo das 18h, com assento garantido.","kakujitsu ni zaseki ga aru jūhachiji no bin ni shite kudasai."],
+     ["a","かしこまりました。お食事券はご利用になりますか。","Certo. Vai querer um vale-refeição?","kashikomarimashita. oshokujiken wa goriyō ni narimasu ka."],
+     ["v","はい、お願いします。荷物は自動的に移りますか。","Sim, por favor. A bagagem é transferida automaticamente?","hai, onegai shimasu. nimotsu wa jidōteki ni utsurimasu ka."],
+     ["a","はい、新しい便に積み替えます。","Sim, vamos transferi-la para o novo voo.","hai, atarashii bin ni tsumikaemasu."],
+     ["v","助かりました。ありがとうございます。","Isso me ajudou muito. Obrigado.","tasukarimashita. arigatō gozaimasu."]]
+  ]},
+  hotel: { tip: "No Japão o check-in costuma ser às 15h e o check-out às 10h ou 11h. Quase todo hotel guarda a bagagem de graça antes e depois.", l: [
+    [["a","いらっしゃいませ。ご予約のお名前をお願いします。","Bem-vindo. Nome da reserva, por favor.","irasshaimase. goyoyaku no onamae o onegai shimasu."],
+     ["v","シルバです。","É Silva.","shiruba desu."],
+     ["a","パスポートを拝見してもよろしいですか。","Posso ver seu passaporte?","pasupōto o haiken shite mo yoroshii desu ka."],
+     ["v","はい、どうぞ。","Sim, aqui está.","hai, dōzo."],
+     ["a","お部屋は五一二号室です。こちらが鍵です。","Seu quarto é o 512. Aqui está a chave.","oheya wa go-ichi-ni gōshitsu desu. kochira ga kagi desu."],
+     ["v","ワイファイのパスワードは何ですか。","Qual é a senha do Wi-Fi?","waifai no pasuwādo wa nan desu ka."],
+     ["a","こちらのカードに書いてあります。","Está escrita neste cartão.","kochira no kādo ni kaite arimasu."],
+     ["v","朝ご飯は何時からですか。","A partir de que horas é o café da manhã?","asagohan wa nanji kara desu ka."]],
+    [["a","フロントでございます。","Aqui é a recepção.","furonto de gozaimasu."],
+     ["v","五一二号室です。エアコンが動きません。","É do 512. O ar-condicionado não funciona.","go-ichi-ni gōshitsu desu. eakon ga ugokimasen."],
+     ["a","申し訳ございません。すぐに係の者を伺わせます。","Desculpe. Vou mandar alguém agora.","mōshiwake gozaimasen. sugu ni kakari no mono o ukagawasemasu."],
+     ["v","それと、タオルをもう少しいただけますか。","E poderia me dar mais algumas toalhas?","sore to, taoru o mō sukoshi itadakemasu ka."],
+     ["a","かしこまりました。ほかに何かございますか。","Certo. Mais alguma coisa?","kashikomarimashita. hoka ni nanika gozaimasu ka."],
+     ["v","明日、レイトチェックアウトはできますか。","Amanhã é possível fazer check-out mais tarde?","ashita, reito chekkuauto wa dekimasu ka."],
+     ["a","十二時まででしたら無料です。","Até o meio-dia é gratuito.","jūniji made deshitara muryō desu."],
+     ["v","では、その後荷物を預かってもらえますか。","Então, depois vocês podem guardar minha bagagem?","dewa, sono ato nimotsu o azukatte moraemasu ka."]],
+    [["a","ご滞在はいかがでしたか。","Como foi sua estadia?","gotaizai wa ikaga deshita ka."],
+     ["v","よかったですが、請求書に心当たりのない料金があります。","Foi boa, mas há uma cobrança na conta que não reconheço.","yokatta desu ga, seikyūsho ni kokoroatari no nai ryōkin ga arimasu."],
+     ["a","確認いたします。こちらは宿泊税でございます。","Vou verificar. Este é o imposto de hospedagem.","kakunin itashimasu. kochira wa shukuhakuzei de gozaimasu."],
+     ["v","わかりました。冷蔵庫の料金は？何も飲んでいません。","Entendi. E a cobrança do frigobar? Não bebi nada.","wakarimashita. reizōko no ryōkin wa? nanimo nonde imasen."],
+     ["a","大変失礼いたしました。すぐに取り消します。","Peço desculpas. Cancelo agora mesmo.","taihen shitsurei itashimashita. sugu ni torikeshimasu."],
+     ["v","それから、昨夜は隣の部屋がとてもうるさかったです。","Além disso, o quarto vizinho estava muito barulhento ontem à noite.","sorekara, sakuya wa tonari no heya ga totemo urusakatta desu."],
+     ["a","ご迷惑をおかけしました。本日の朝食はサービスさせていただきます。","Desculpe o incômodo. O café da manhã de hoje é cortesia.","gomeiwaku o okake shimashita. honjitsu no chōshoku wa sābisu sasete itadakimasu."],
+     ["v","ありがとうございます。領収書をメールで送ってもらえますか。","Obrigado. Pode me mandar o recibo por e-mail?","arigatō gozaimasu. ryōshūsho o mēru de okutte moraemasu ka."]]
+  ]},
+  chunks: [
+    ["___をください。","___, por favor (para pedir algo).",[["お水をください。","Água, por favor.","omizu o kudasai."],["これをください。","Quero isto, por favor.","kore o kudasai."]]],
+    ["___はありますか。","Tem ___?",[["Mサイズはありますか。","Tem tamanho M?","emu saizu wa arimasu ka."],["今夜、空いている部屋はありますか。","Tem quarto livre hoje à noite?","kon'ya, aite iru heya wa arimasu ka."]]],
+    ["___はどこですか。","Onde fica ___?",[["トイレはどこですか。","Onde fica o banheiro?","toire wa doko desu ka."],["駅はどこですか。","Onde fica a estação?","eki wa doko desu ka."]]],
+    ["___はいくらですか。","Quanto custa ___?",[["これはいくらですか。","Quanto custa isto?","kore wa ikura desu ka."],["空港までいくらですか。","Quanto custa até o aeroporto?","kūkō made ikura desu ka."]]],
+    ["___まで行きたいです。","Quero ir até ___.",[["東京駅まで行きたいです。","Quero ir até a estação de Tóquio.","tōkyō-eki made ikitai desu."],["このホテルまで行きたいです。","Quero ir até este hotel.","kono hoteru made ikitai desu."]]],
+    ["___てもいいですか。","Posso ___?",[["写真を撮ってもいいですか。","Posso tirar foto?","shashin o totte mo ii desu ka."],["カードで払ってもいいですか。","Posso pagar com cartão?","kādo de haratte mo ii desu ka."]]],
+    ["すみません、___。","Com licença / desculpe, ___.",[["すみません、もう一度お願いします。","Desculpe, mais uma vez, por favor.","sumimasen, mō ichido onegai shimasu."],["すみません、ゆっくり話してください。","Desculpe, fale devagar, por favor.","sumimasen, yukkuri hanashite kudasai."]]],
+    ["___がわかりません。","Não entendo ___.",[["日本語が少ししかわかりません。","Só entendo um pouco de japonês.","nihongo ga sukoshi shika wakarimasen."],["道がわかりません。","Não sei o caminho.","michi ga wakarimasen."]]]
+  ]
+});
+
+/* Sites gratuitos para estudar fora do app */
+const SITES = {
+  en: [["YouGlish","https://youglish.com","Digite uma palavra e ouça nativos falando em vídeos reais."],
+       ["BBC Learning English","https://www.bbc.co.uk/learningenglish","Aulas curtas de pronúncia, vocabulário e notícias."],
+       ["VOA Learning English","https://learningenglish.voanews.com","Notícias em inglês americano lido mais devagar, com texto."],
+       ["ELLLO","https://elllo.org","Conversas reais curtas com sotaques variados, com transcrição."],
+       ["TED","https://www.ted.com","Palestras com legenda em inglês, ótimas para shadowing."]],
+  es: [["Dreaming Spanish","https://www.dreamingspanish.com","Vídeos por nível só em espanhol, método de input compreensível."],
+       ["RTVE Play","https://www.rtve.es/play/","TV espanhola gratuita, com séries e notícias."],
+       ["YouGlish","https://youglish.com","Escolha Spanish e ouça qualquer palavra dita por nativos."]],
+  it: [["Podcast Italiano","https://podcastitaliano.com","Podcast e vídeos em italiano para estrangeiros, com transcrição."],
+       ["RaiPlay","https://www.raiplay.it","TV italiana gratuita."],
+       ["YouGlish","https://youglish.com","Escolha Italian e ouça qualquer palavra dita por nativos."]],
+  fr: [["RFI Français facile","https://francaisfacile.rfi.fr","Notícias em francês fácil, com áudio e texto."],
+       ["TV5Monde Apprendre","https://apprendre.tv5monde.com","Exercícios com vídeos curtos, por nível."],
+       ["YouGlish","https://youglish.com","Escolha French e ouça qualquer palavra dita por nativos."]],
+  de: [["DW Learn German","https://learngerman.dw.com","Curso completo e gratuito da Deutsche Welle, do A1 ao C1."],
+       ["Easy German","https://www.youtube.com/@EasyGerman","Entrevistas na rua com legenda em alemão e inglês."],
+       ["YouGlish","https://youglish.com","Escolha German e ouça qualquer palavra dita por nativos."]],
+  ja: [["NHK Easy Japanese","https://www3.nhk.or.jp/nhkworld/en/learnjapanese/","Curso gratuito da NHK com áudio, para iniciantes."],
+       ["NHK News Web Easy","https://www3.nhk.or.jp/news/easy/","Notícias em japonês simples, com furigana e áudio."],
+       ["YouGlish","https://youglish.com","Escolha Japanese e ouça qualquer palavra dita por nativos."]]
+};
+
+/* ============ CONVERSA COM IA (grátis) ============
+   Dentro do Claude: usa o próprio Claude (capacidade "sample"), sem configurar nada.
+   No GitHub Pages: usa o Gemini do Google com a chave gratuita da pessoa,
+   guardada só neste aparelho. */
+const LANG_EN = {en:"American English",es:"Spanish (as spoken in Spain)",it:"Italian",fr:"French",de:"German",ja:"Japanese"};
+const TALK = [
+  {id:"imm",name:"Imigração",role:"an immigration officer at the airport, interviewing an arriving tourist"},
+  {id:"air",name:"Check-in no aeroporto",role:"an airline check-in agent at the airport"},
+  {id:"hotel",name:"Hotel",role:"a hotel front desk clerk; the learner is checking in or has a problem with the room"},
+  {id:"rest",name:"Restaurante",role:"a waiter at a casual restaurant taking the learner's order"},
+  {id:"shop",name:"Compras",role:"a sales clerk in a clothing store"},
+  {id:"transp",name:"Transporte",role:"a taxi driver, or a local giving directions on the street"},
+  {id:"interview",name:"Entrevista de emprego",role:"a hiring manager interviewing the learner for a job; ask typical interview questions one at a time with natural follow-ups"},
+  {id:"work",name:"Reunião e small talk",role:"a friendly coworker making small talk before a meeting and then discussing a project update"},
+  {id:"free",name:"Papo livre",role:"a friendly local chatting about travel, food, work and daily life"}
+];
+const AI = {kind:null,sample:null,checked:false,denied:false};
+const gemKey = () => store.get("embarque:gemini") || "";
+const gemModel = () => store.get("embarque:geminiModel") || "gemini-flash-latest";
+const inClaude = () => !!(window.claude && typeof window.claude.use === "function");
+function refreshAI(){AI.kind = AI.sample && !AI.denied ? "claude" : gemKey() ? "gemini" : null}
+async function initAI(){
+  if(inClaude()){
+    try{const s=await window.claude.use("sample");if(s)AI.sample=s}catch(e){}
+  }
+  AI.checked=true; refreshAI();
+  if(["home","talk","answers","settings"].includes(V.name))render();
+}
+const AI_ERR = {
+  not_granted:"Você não liberou o uso do Claude nesta página.",
+  sampling_disabled:"O Claude não está disponível para esta conta.",
+  rate_limited:"Muitas mensagens seguidas ou limite de uso atingido. Espere um pouco e tente de novo.",
+  session_expired:"Sua sessão do Claude expirou. Entre de novo.",
+  refused:"O Claude não quis responder a essa mensagem. Tente dizer de outro jeito.",
+  invalid_json:"A resposta veio num formato inesperado. Tente de novo.",
+  upstream_error:"A conexão falhou. Tente de novo.",
+  empty_completion:"A resposta veio vazia. Tente de novo."
+};
+function parseLoose(t){
+  t=String(t||"").trim();
+  try{return JSON.parse(t)}catch(e){}
+  const m=t.match(/```(?:json)?\s*([\s\S]*?)```/);if(m){try{return JSON.parse(m[1])}catch(e){}}
+  const a=t.indexOf("{"),b=t.lastIndexOf("}");
+  if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch(e){}}
+  throw {msg:AI_ERR.invalid_json};
+}
+async function aiJSON(prompt,opts={}){
+  if(AI.kind==="claude"){
+    try{return await AI.sample.json(prompt,{modelTier:opts.tier||"quick",cache:false,signal:opts.signal})}
+    catch(e){
+      if(e&&e.code==="cancelled")throw {cancelled:true};
+      if(e&&["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)){AI.denied=true;refreshAI()}
+      throw {msg:(e&&AI_ERR[e.code])||AI_ERR.upstream_error};
+    }
+  }
+  if(AI.kind==="gemini"){
+    let r;
+    try{
+      r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(gemModel())}:generateContent`,{
+        method:"POST",signal:opts.signal,
+        headers:{"Content-Type":"application/json","x-goog-api-key":gemKey()},
+        body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json",temperature:0.7}})
+      });
+    }catch(e){
+      if(e&&e.name==="AbortError")throw {cancelled:true};
+      throw {msg:"Sem conexão com o Gemini. Confira a internet."};
+    }
+    if(!r.ok){
+      const st=r.status;
+      if(st===400||st===401||st===403)throw {msg:"O Gemini recusou a chave. Confira a chave em Ajustes."};
+      if(st===404)throw {msg:"Esse modelo do Gemini não existe mais. Escolha outro em Ajustes."};
+      if(st===429)throw {msg:"Limite gratuito do Gemini atingido. Espere um minuto, ou até amanhã se for o limite diário."};
+      throw {msg:`O Gemini falhou (erro ${st}). Tente de novo.`};
+    }
+    const j=await r.json();
+    const text=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("");
+    if(!text)throw {msg:"O Gemini não respondeu a essa mensagem. Tente dizer de outro jeito."};
+    return parseLoose(text);
+  }
+  throw {msg:"A conversa com IA ainda não está configurada."};
+}
+/* Lista os modelos "flash" gratuitos disponíveis para a chave e escolhe o mais novo */
+async function gemListModels(key){
+  const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",{headers:{"x-goog-api-key":key}});
+  if(!r.ok)throw r.status;
+  const j=await r.json();
+  const names=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent"))
+    .map(m=>String(m.name).replace(/^models\//,""))
+    .filter(n=>/flash/.test(n)&&!/(image|tts|audio|live|embed|exp|8b|thinking|robotics|computer|vision)/.test(n));
+  const ver=n=>{const m=n.match(/gemini-(\d+(?:\.\d+)?)/);return m?parseFloat(m[1]):0};
+  return names.sort((a,b)=>(/preview/.test(a)-/preview/.test(b))||(ver(b)-ver(a))||(/lite/.test(a)-/lite/.test(b))||a.localeCompare(b));
+}
+
+/* ----- Estado da conversa ----- */
+let LT=null;
+let ansFix={};
+const talkById = id => TALK.find(t=>t.id===id);
+function talkPrompt(){
+  const lang=LANG_EN[S.lang], t=talkById(LT.scen);
+  const lvlTxt=["BEGINNER (CEFR A1-A2): very short, simple sentences and common words; speak slowly and clearly.",
+    "INTERMEDIATE (CEFR B1-B2): natural everyday language of moderate length.",
+    "ADVANCED (CEFR C1): natural native pace, idioms and phrasal verbs, and realistic complications."][LT.lvl];
+  let ctx="";
+  if(LT.scen==="interview"&&S.lang==="en"){
+    const a=questions().filter(q=>(S.answers[q.id]||"").trim()).map(q=>`Q: ${q.q}\nA: ${S.answers[q.id].trim()}`).join("\n\n");
+    if(a)ctx=`\nBackground: the learner prepared these interview answers. Use them to ask realistic follow-up questions:\n${a.slice(0,4000)}\n`;
+  }
+  const turns=LT.turns.slice(-30).map(x=>(x.who==="ai"?"PARTNER: ":"LEARNER: ")+x.text).join("\n");
+  return `You are a role-play partner helping a Brazilian Portuguese speaker practice ${lang} for real situations.
+Your role: ${t.role}. The scene takes place in ${LANGS[S.lang].where}.
+Learner level: ${lvlTxt}
+Rules:
+- Stay in character. Write "reply" only in ${lang}: 1 to 3 short sentences, ending with a question or a cue so the learner keeps talking.
+- Never use Portuguese inside "reply".
+- Look at the learner's LAST message only. If it has a mistake or sounds unnatural, set "correction" to a short, friendly explanation in Brazilian Portuguese (at most 2 sentences) and "better" to a natural ${lang} version of what they meant. If it is fine, or there is no learner message yet, set both to "".
+- If the learner writes in Portuguese, put in "better" how to say it in ${lang}, explain briefly in "correction", and continue the scene.
+- "reply_pt": Brazilian Portuguese translation of "reply".
+- "romaji": ${S.lang==="ja"?"Hepburn romaji of \"reply\"":"empty string"}.
+${ctx}
+Conversation so far:
+${turns||"(nothing yet: open the scene with your first line)"}
+
+Reply with only this JSON object: {"reply":"...","reply_pt":"...","correction":"...","better":"...","romaji":"..."}`;
+}
+function talkSummaryPrompt(){
+  const lang=LANG_EN[S.lang];
+  const turns=LT.turns.map(x=>(x.who==="ai"?"PARTNER: ":"LEARNER: ")+x.text).join("\n");
+  return `You are an encouraging but honest ${lang} teacher for a Brazilian learner (level: ${LEVELS[LT.lvl]}).
+Below is a role-play (${talkById(LT.scen).name}). Evaluate ONLY the learner's messages.
+Reply with only this JSON object:
+{"score": integer from 0 to 10,
+ "summary": "2 sentences in Brazilian Portuguese",
+ "strengths": ["up to 3 short points in Brazilian Portuguese"],
+ "fixes": [{"wrong":"what the learner said","right":"natural ${lang}","why":"short reason in Brazilian Portuguese"}] (up to 5, most important first; empty if none),
+ "phrases": [{"text":"a useful ${lang} sentence for this situation","pt":"Brazilian Portuguese translation"}] (exactly 4)}
+
+Transcript:
+${turns.slice(-12000)}`;
+}
+async function talkCall(){
+  LT.busy=true;LT.err=null;render();
+  LT.ctl=new AbortController();
+  try{
+    const r=await aiJSON(talkPrompt(),{signal:LT.ctl.signal});
+    if(!LT)return;
+    const reply=String(r.reply||"").trim();
+    if(!reply)throw {msg:AI_ERR.empty_completion};
+    const last=[...LT.turns].reverse().find(x=>x.who==="me");
+    if(last&&!last.checked){last.checked=true;last.correction=String(r.correction||"").trim();last.better=String(r.better||"").trim()}
+    LT.turns.push({who:"ai",text:reply,pt:String(r.reply_pt||""),ro:String(r.romaji||"")});
+    LT.busy=false;render();
+    say(reply);
+  }catch(e){
+    if(!LT)return;
+    LT.busy=false;
+    if(!e||!e.cancelled)LT.err=(e&&e.msg)||AI_ERR.upstream_error;
+    render();
+  }
+}
+function talkStart(){
+  const sc=document.querySelector('input[name="tscen"]:checked'), lv=document.querySelector('input[name="tlvl"]:checked');
+  LT={scen:sc?sc.value:"hotel",lvl:lv?+lv.value:(LG().level??0),turns:[],draft:"",busy:false,step:V.step};
+  render();talkCall();
+}
+function talkSend(text){
+  text=String(text||"").trim();
+  if(!text||LT.busy)return;
+  LT.turns.push({who:"me",text});LT.draft="";LT.lastFinish=false;
+  talkCall();
+}
+async function talkMic(){
+  if(LT.listening){try{recActive&&recActive.stop()}catch(e){}return}
+  LT.listening=true;LT.err=null;render();
+  try{
+    const alts=await listen(bcp(),true);
+    LT.listening=false;
+    talkSend(alts[0]);
+  }catch(e){
+    LT.listening=false;
+    if(e==="not-allowed"||e==="service-not-allowed"){micBlocked=true;LT.err="O microfone não foi liberado. Escreva sua resposta."}
+    else if(e==="no-speech")LT.err="Não ouvi nada. Toque no microfone e fale logo em seguida.";
+    else if(e!=="aborted")LT.err="Não consegui ouvir. Tente de novo ou escreva.";
+    render();
+  }
+}
+async function talkFinish(){
+  const mine=LT.turns.filter(x=>x.who==="me").length;
+  if(mine<2){toast("Responda pelo menos duas vezes antes de pedir a avaliação.");return}
+  stopAudio();
+  LT.busy=true;LT.err=null;LT.summarizing=true;render();
+  LT.ctl=new AbortController();
+  try{
+    const r=await aiJSON(talkSummaryPrompt(),{tier:"default",signal:LT.ctl.signal});
+    if(!LT)return;
+    LT.summary={
+      score:Math.max(0,Math.min(10,Math.round(+r.score||0))),
+      summary:String(r.summary||""),
+      strengths:(r.strengths||[]).slice(0,3).map(String),
+      fixes:(r.fixes||[]).slice(0,5).filter(f=>f&&f.right).map(f=>({wrong:String(f.wrong||""),right:String(f.right),why:String(f.why||"")})),
+      phrases:(r.phrases||[]).slice(0,4).filter(p=>p&&p.text).map(p=>({text:String(p.text),pt:String(p.pt||"")}))
+    };
+    LT.busy=false;LT.summarizing=false;
+    if(LT.step!=null)markStep(LT.step);
+    render();window.scrollTo(0,0);
+  }catch(e){
+    if(!LT)return;
+    LT.busy=false;LT.summarizing=false;
+    if(!e||!e.cancelled)LT.err=(e&&e.msg)||AI_ERR.upstream_error;
+    render();
+  }
+}
+/* Frases da conversa entram na revisão espaçada */
+function addCustom(text,pt){
+  const lg=LG();lg.custom=lg.custom||{};
+  const id=Object.keys(lg.custom).find(k=>lg.custom[k].text===text)||("x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+  lg.custom[id]={text,pt};
+  if(!lg.srs["u|"+id])lg.srs["u|"+id]={b:0,d:dstr(addDays(1))};
+}
+function talkSaveReview(){
+  const s=LT.summary;if(!s)return;
+  s.fixes.forEach(f=>addCustom(f.right,f.why||f.wrong));
+  s.phrases.forEach(p=>addCustom(p.text,p.pt));
+  s.saved=true;save();
+  toast("Frases adicionadas à revisão de amanhã.");render();
+}
+async function fixAnswer(qid){
+  const q=questions().find(x=>x.id===qid), a=(S.answers[qid]||"").trim();
+  if(!a)return;
+  ansFix[qid]={busy:true};render();
+  try{
+    const r=await aiJSON(`You are a US hiring coach helping a Brazilian professional prepare for a job interview in English.
+Interview question: "${q.q}"
+Candidate's draft answer (may contain mistakes or Portuguese):
+"""${a.slice(0,3000)}"""
+Rewrite it in natural, professional American English that is easy to say out loud: at most 90 words, short sentences, first person. Keep the candidate's facts; do not invent companies or numbers. If an important detail is missing, keep or add a placeholder in [brackets].
+Reply with only this JSON object: {"improved":"...","notes":["up to 3 short notes in Brazilian Portuguese about what you changed and why"]}`,{tier:"default"});
+    ansFix[qid]={improved:String(r.improved||"").trim(),notes:(r.notes||[]).slice(0,3).map(String)};
+    if(!ansFix[qid].improved)throw {msg:AI_ERR.empty_completion};
+  }catch(e){ansFix[qid]={err:(e&&e.msg)||AI_ERR.upstream_error}}
+  if(V.name==="answers")render();
+}
+
+/* ----- Telas ----- */
+function aiStatusText(){
+  if(AI.kind==="claude")return "Usando o Claude da sua conta, sem custo extra.";
+  if(AI.kind==="gemini")return `Usando o Gemini gratuito (${gemModel()}).`;
+  return "Ainda não configurada.";
+}
+function gemSetupHTML(){
+  if(inClaude())return `<p class="small">${AI.denied?"O uso do Claude não foi liberado nesta página. Abra as permissões do artefato para liberar.":"Dentro do Claude a conversa usa o próprio Claude, sem configuração."}</p>
+    <p class="small muted">Na versão instalada no celular (GitHub), a conversa usa o Gemini com uma chave gratuita, configurada em Ajustes.</p>`;
+  return `<ol class="method small">
+      <li>Abra <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> e entre com sua conta Google.</li>
+      <li>Toque em <b>Create API key</b> e copie a chave.</li>
+      <li>Cole abaixo e toque em Salvar. Não precisa de cartão de crédito.</li>
+    </ol>
+    <div class="field"><label for="gem-key">Chave do Gemini</label><input id="gem-key" type="password" autocomplete="off" placeholder="Cole a chave aqui" value="${esc(gemKey())}"></div>
+    <div class="row"><button class="btn sign" data-act="gemsave">Salvar e testar</button>${gemKey()?`<button class="btn ghost" data-act="gemclear">Remover chave</button>`:""}</div>
+    ${AI.gemModels&&AI.gemModels.length?`<div class="field"><label for="gem-model">Modelo</label><select id="gem-model" data-change="gemmodel">${AI.gemModels.map(m=>`<option ${m===gemModel()?"selected":""}>${esc(m)}</option>`).join("")}</select></div>`:""}
+    <p class="small muted">A chave fica só neste aparelho. O plano gratuito tem limite de mensagens por minuto e por dia, suficiente para praticar todo dia. No plano gratuito o Google pode usar as conversas para melhorar os produtos dele, então não escreva dados pessoais sensíveis.</p>`;
+}
+function vTalk(){
+  if(!LT)return vTalkPick();
+  if(LT.summary)return vTalkSummary();
+  const t=talkById(LT.scen);
+  const bubbles=LT.turns.map(x=>{
+    if(x.who==="ai")return `<div class="bubble a" lang="${bcp()}"><div class="brow"><span>${esc(x.text)}</span><button class="mini" data-act="say" data-text="${esc(x.text)}" aria-label="Ouvir">${ICONS.play}</button></div>
+      ${x.ro?`<span class="romaji">${esc(x.ro)}</span>`:""}${x.pt?`<details><summary>tradução</summary>${esc(x.pt)}</details>`:""}</div>`;
+    const fix=x.correction||x.better?`<div class="fix"><p>${esc(x.correction||"Um jeito mais natural:")}</p>${x.better?`<p class="better" lang="${bcp()}"><b>${esc(x.better)}</b> <button class="mini" data-act="say" data-text="${esc(x.better)}" aria-label="Ouvir">${ICONS.play}</button></p>`:""}</div>`
+      :x.checked?`<div class="ok small">✓ Certo</div>`:"";
+    return `<div class="bubble v" lang="${bcp()}">${esc(x.text)}</div>${fix}`;
+  }).join("");
+  const mine=LT.turns.filter(x=>x.who==="me").length;
+  const mic=canListen()?`<button class="mic sm ${LT.listening?"on":""}" data-act="talkmic" aria-label="${LT.listening?"Parar e enviar":"Falar"}" ${LT.busy?"disabled":""}>${ICONS.mic}</button>`:"";
+  return `<div class="lhead"><button class="iconbtn" data-act="talkquit" aria-label="Sair da conversa">${ICONS.back}</button>
+    <div class="t"><span class="label">Conversa livre · ${LEVELS[LT.lvl]}</span><h3>${esc(t.name)}</h3></div></div>
+  ${speedSeg()}
+  <div class="chat talk">${bubbles}${LT.busy?`<div class="bubble a typing">${LT.summarizing?"Avaliando sua conversa…":"…"}</div>`:""}</div>
+  ${LT.err?`<div class="result"><p class="err">${esc(LT.err)}</p><button class="btn small" data-act="talkretry" style="align-self:flex-start">Tentar de novo</button></div>`:""}
+  <div class="composer">
+    ${mic}
+    <textarea id="talk-input" rows="2" lang="${bcp()}" placeholder="${LT.listening?"Gravando… toque no microfone para enviar":canListen()?"Fale ou escreva sua resposta":"Escreva sua resposta"}" ${LT.busy||LT.listening?"disabled":""}>${esc(LT.draft||"")}</textarea>
+    <button class="btn sign" data-act="talksend" ${LT.busy||LT.listening?"disabled":""}>Enviar</button>
+  </div>
+  <div class="row"><button class="btn ghost" data-act="talkfinish" ${mine<2||LT.busy?"disabled":""}>Encerrar e ver avaliação</button>
+  <span class="small muted">${mine<2?"Responda pelo menos 2 vezes":"A avaliação aponta erros e frases para revisar"}</span></div>`;
+}
+function vTalkPick(){
+  const lvl=LG().level??0;
+  const setup=!AI.kind?`<div class="card"><span class="label">Configurar a IA (grátis)</span>${!AI.checked&&inClaude()?`<p class="muted">Verificando…</p>`:gemSetupHTML()}</div>`:"";
+  return `<div class="lhead">${backBtn()}<div class="t"><span class="label">${esc(LANGS[S.lang].name)}</span><h2>Conversa livre</h2></div></div>
+  <div class="note">A IA faz o papel do atendente, oficial ou entrevistador e conversa com você no ritmo do seu nível. A cada resposta sua ela corrige o que precisa e mostra um jeito mais natural de dizer. No final você recebe uma avaliação e as frases vão para a revisão.</div>
+  ${setup}
+  <div class="card"><span class="label">Situação</span>
+    <div class="pick">${TALK.map((t,i)=>`<input type="radio" name="tscen" id="ts-${t.id}" value="${t.id}" ${i===2?"checked":""}><label for="ts-${t.id}">${esc(t.name)}</label>`).join("")}</div>
+    <span class="label">Nível</span>
+    <div class="seg three">${LEVELS.map((L,i)=>`<input type="radio" name="tlvl" id="tl-${i}" value="${i}" ${i===lvl?"checked":""}><label for="tl-${i}"><b>${L}</b></label>`).join("")}</div>
+  </div>
+  <button class="btn sign block" data-act="talkstart" ${AI.kind?"":"disabled"}>Começar conversa</button>
+  ${AI.kind?`<p class="small muted center">${esc(aiStatusText())}</p>`:""}`;
+}
+function vTalkSummary(){
+  const s=LT.summary;
+  return `<div class="lhead"><button class="iconbtn" data-act="talkquit" aria-label="Voltar">${ICONS.back}</button>
+    <div class="t"><span class="label">Conversa livre · ${esc(talkById(LT.scen).name)}</span><h2>Sua avaliação</h2></div></div>
+  <div class="card"><span class="pct ${s.score>=7?"good":s.score>=5?"":"bad"}" style="font-size:2.4rem">${s.score}/10</span><p>${esc(s.summary)}</p>
+    ${s.strengths.length?`<ul class="mix">${s.strengths.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</div>
+  ${s.fixes.length?`<div class="card"><span class="label">Para corrigir</span>${s.fixes.map(f=>`<div class="fixrow">
+    ${f.wrong?`<p class="small muted"><s>${esc(f.wrong)}</s></p>`:""}<p lang="${bcp()}"><b>${esc(f.right)}</b> <button class="mini" data-act="say" data-text="${esc(f.right)}" aria-label="Ouvir">${ICONS.play}</button></p>
+    <p class="small">${esc(f.why)}</p></div>`).join("")}</div>`:""}
+  ${s.phrases.length?`<div class="card"><span class="label">Frases úteis para esta situação</span>${s.phrases.map(p=>`<div class="fixrow"><p lang="${bcp()}"><b>${esc(p.text)}</b> <button class="mini" data-act="say" data-text="${esc(p.text)}" aria-label="Ouvir">${ICONS.play}</button></p><p class="small muted">${esc(p.pt)}</p></div>`).join("")}</div>`:""}
+  <div class="row">${s.saved?`<span class="small">✓ Na revisão de amanhã</span>`:`<button class="btn sign" data-act="talksave">Adicionar frases à revisão</button>`}
+  <button class="btn" data-act="talknew">Nova conversa</button>${continueBtn()}<button class="btn ghost" data-act="talkquit">Início</button></div>`;
+}
+function ansFixHTML(qid){
+  const f=ansFix[qid];if(!f)return "";
+  if(f.busy)return `<div class="fix"><p>Revisando sua resposta…</p></div>`;
+  if(f.err)return `<div class="fix"><p class="err">${esc(f.err)}</p></div>`;
+  return `<div class="fix"><span class="label">Versão revisada</span><p class="better" lang="en">${esc(f.improved)}</p>
+    ${f.notes.length?`<ul class="mix small">${f.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:""}
+    <div class="row"><button class="btn small sign" data-act="usefix" data-q="${qid}">Usar esta versão</button><button class="btn small ghost" data-act="say" data-text="${esc(f.improved)}">${ICONS.play}Ouvir</button><button class="btn small ghost" data-act="dropfix" data-q="${qid}">Descartar</button></div></div>`;
+}
+
+"use strict";
+
+/* ============ CONFIGURAÇÃO DO FIREBASE ============
+   Para ativar login e sincronização, troque null pelo objeto
+   de configuração do seu app web no Firebase, por exemplo:
+   const FIREBASE_CONFIG = {
+     apiKey: "...", authDomain: "...", projectId: "...", appId: "..."
+   };
+   Com null, o app funciona normalmente, salvando só no aparelho. */
+const FIREBASE_CONFIG = null;
+
+const LANGS = {
+  en:{name:"Inglês americano",tag:"EN-US",bcp:"en-US",where:"EUA"},
+  es:{name:"Espanhol",tag:"ES",bcp:"es-ES",where:"Espanha"},
+  it:{name:"Italiano",tag:"IT",bcp:"it-IT",where:"Itália"},
+  fr:{name:"Francês",tag:"FR",bcp:"fr-FR",where:"França"},
+  de:{name:"Alemão",tag:"DE",bcp:"de-DE",where:"Alemanha"},
+  ja:{name:"Japonês",tag:"JA",bcp:"ja-JP",where:"Japão"}
+};
+const LEVELS = ["Iniciante","Intermediário","Avançado"];
+const TRACKS = {travel:"Viagem",pro:"Profissional"};
+const SCEN = [
+  {id:"imm",track:"travel",name:"Imigração e alfândega",code:"GATE A",them:"Oficial"},
+  {id:"air",track:"travel",name:"Aeroporto",code:"GATE B",them:"Atendente"},
+  {id:"hotel",track:"travel",name:"Hotel",code:"GATE C",them:"Recepção"},
+  {id:"rest",track:"travel",name:"Restaurante",code:"GATE D",them:"Garçom"},
+  {id:"shop",track:"travel",name:"Compras",code:"GATE E",them:"Vendedor"},
+  {id:"transp",track:"travel",name:"Transporte",code:"GATE F",them:"Atendente"},
+  {id:"interview",track:"pro",name:"Entrevista de emprego",code:"SALA 1",them:"Entrevistador"},
+  {id:"work",track:"pro",name:"Reuniões e dia a dia",code:"SALA 2",them:"Colega"}
+];
+const SOON = {travel:["Passeios","Emergências","Conversa social"],pro:["Telefonemas","Apresentações"]};
+const ACTS = [
+  {id:"rep",name:"Ouvir e repetir",desc:"Escute no ritmo nativo e repita. Use o shadowing 3x para falar junto."},
+  {id:"conv",name:"Conversa simulada",desc:"Responda falando, como na situação real."},
+  {id:"quiz",name:"Teste do módulo",desc:"6 perguntas. Com 80% você conclui o nível."}
+];
+/* Velocidades da voz. "Nativo" = ritmo de conversa real, sem desacelerar. */
+const SPEEDS = [{id:"slow",t:"Lento",r:0.7},{id:"normal",t:"Normal",r:0.9},{id:"native",t:"Nativo",r:1.1}];
+const SLOW_RATE = 0.65;
+const PASS_QUIZ = 80, PASS_SPEAK = 70;
+const MINUTES = [{v:10},{v:15},{v:30},{v:60}];
+/* Composição do treino diário por tempo disponível */
+const SESSION_CFG = {
+  10:{rev:6,ch:1,acts:1,listen:0},
+  15:{rev:8,ch:2,acts:1,listen:0},
+  30:{rev:10,ch:3,acts:2,listen:10,talk:1},
+  60:{rev:15,ch:4,acts:4,listen:20,talk:1}
+};
+/* Revisão espaçada: dias até a próxima revisão, por caixa */
+const SRS_DAYS = [1,1,3,7,14,30,60];
+
+const ICONS = {
+  imm:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="7" y="4" width="18" height="24" rx="2"/><circle cx="16" cy="14" r="5"/><path d="M11 23h10"/></svg>',
+  air:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 18l24-9-3 6-9 3-4 8-2-1 1-6-5 1z"/></svg>',
+  hotel:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 25V8M4 19h24v6M28 19v-4a3 3 0 0 0-3-3H14v7"/><circle cx="9" cy="15" r="2.5"/></svg>',
+  rest:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 4v9a3 3 0 0 0 3 3v12M15 4v9a3 3 0 0 1-3 3M12 4v7"/><path d="M22 28V4c-3 2-4 6-4 10h4"/></svg>',
+  shop:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M6 10h20l-1.5 17h-17z"/><path d="M11 13V9a5 5 0 0 1 10 0v4"/></svg>',
+  transp:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5 21v-6l3-7h16l3 7v6z"/><path d="M5 15h22"/><circle cx="10" cy="24" r="2.5"/><circle cx="22" cy="24" r="2.5"/></svg>',
+  interview:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="4" y="10" width="24" height="16" rx="2"/><path d="M12 10V7h8v3M4 17h24"/></svg>',
+  work:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 6h16v10H10l-4 4v-4H4z"/><path d="M24 12h4v10h-2v4l-4-4h-8v-3"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
+  slow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 8-8"/><path d="M12 7v5l3 2"/></svg>',
+  loop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>'
+};
+
+/* ============ ESTADO ============ */
+const dstr = d => d.toLocaleDateString("sv");
+const today = () => dstr(new Date());
+const addDays = n => {const d=new Date();d.setDate(d.getDate()+n);return d};
+const blankLang = () => ({level:null,test:null,plan:{date:"",minutes:15,focus:"both"},units:{},srs:{},custom:{},session:null});
+function blankState(){const langs={};for(const k in LANGS)langs[k]=blankLang();return {v:2,lang:"en",speed:"normal",langs,days:{},answers:{},updatedAt:0}}
+const store = {
+  get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+function normalize(s){
+  if(!s||typeof s!=="object")return blankState();
+  s.langs=s.langs||{};
+  for(const k in LANGS){
+    const l=Object.assign(blankLang(),s.langs[k]||{});
+    l.plan=Object.assign({date:"",minutes:15,focus:"both"},l.plan||{});
+    if(!SESSION_CFG[l.plan.minutes])l.plan.minutes=15;
+    l.units=l.units||{}; l.srs=l.srs||{}; l.custom=l.custom||{};
+    s.langs[k]=l;
+  }
+  s.days=s.days||{}; s.answers=s.answers||{};
+  if(!LANGS[s.lang])s.lang="en";
+  if(!SPEEDS.some(x=>x.id===s.speed)){s.speed=s.rate>=1?"native":s.rate&&s.rate<0.8?"slow":"normal"}
+  delete s.rate;
+  s.v=2;
+  return s;
+}
+let uidKey="local";
+function loadState(){let s=null;try{s=JSON.parse(store.get("embarque:"+uidKey)||"null")}catch(e){}return normalize(s)}
+let S=loadState();
+let pushTimer=null;
+function save(){
+  S.updatedAt=Date.now();
+  store.set("embarque:"+uidKey,JSON.stringify(S));
+  if(fb.user){clearTimeout(pushTimer);pushTimer=setTimeout(push,1500)}
+}
+const LG = () => S.langs[S.lang];
+const speedRate = () => (SPEEDS.find(x=>x.id===S.speed)||SPEEDS[1]).r;
+const scensFor = (lang=S.lang) => SCEN.filter(s=>C[lang][s.id]);
+const hasPro = (lang=S.lang) => scensFor(lang).some(s=>s.track==="pro");
+const scenById = id => SCEN.find(s=>s.id===id);
+const scName = id => scenById(id).name;
+const actName = id => ACTS.find(a=>a.id===id).name;
+const unit = (scen,lvl) => LG().units[scen+"-"+lvl] || {};
+function setUnit(scen,lvl,act,val){
+  const k=scen+"-"+lvl, u=LG().units[k]||{};
+  u[act]=Math.max(u[act]||0,val);
+  LG().units[k]=u; save();
+}
+const actDone = (u,act) => act==="quiz" ? (u.quiz||0)>=PASS_QUIZ : (u[act]||0)>0;
+const lines = (scen,lvl,lang=S.lang) => C[lang][scen].l[lvl];
+const chunks = (lang=S.lang) => C[lang].chunks||[];
+const questions = (lang=S.lang) => C[lang].questions||[];
+
+/* ============ REVISÃO ESPAÇADA ============ */
+function keyItem(key,lang=S.lang){
+  const p=key.split("|");
+  try{
+    if(p[0]==="s"){const l=C[lang][p[1]].l[+p[2]][+p[3]];const sc=scenById(p[1]);
+      return {text:l[1],pt:l[2],ro:l[3],ctx:sc.name+" · "+LEVELS[+p[2]],who:l[0]==="v"?"Você":sc.them}}
+    if(p[0]==="u"){const c=(S.langs[lang].custom||{})[p[1]];if(c)return {text:c.text,pt:c.pt,ctx:"Da conversa livre",who:"Você"}}
+    if(p[0]==="c"){const ch=chunks(lang)[+p[1]];const ex=ch[2][+p[2]];
+      return {text:ex[0],pt:ex[1],ro:ex[2],ctx:"Bloco: "+ch[0],who:"Você"}}
+  }catch(e){}
+  return null;
+}
+function srsMark(key,ok){
+  if(!key)return;
+  const srs=LG().srs, cur=srs[key];
+  let box=cur?cur.b:0;
+  box=ok?Math.min(box+1,SRS_DAYS.length-1):0;
+  srs[key]={b:box,d:dstr(addDays(SRS_DAYS[box]))};
+  save();
+}
+function dueKeys(){
+  const t=today(), srs=LG().srs;
+  return Object.keys(srs).filter(k=>srs[k].d<=t&&keyItem(k)).sort((a,b)=>srs[a].d<srs[b].d?-1:srs[a].d>srs[b].d?1:srs[a].b-srs[b].b);
+}
+const srsCount = () => Object.keys(LG().srs).length;
+
+/* ============ FIREBASE (opcional) ============ */
+const fb={enabled:!!FIREBASE_CONFIG,ready:!FIREBASE_CONFIG,user:null,failed:false,status:"",localMode:false};
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+async function initFirebase(){
+  if(!fb.enabled)return;
+  const base="https://www.gstatic.com/firebasejs/10.12.2/";
+  try{
+    await loadScript(base+"firebase-app-compat.js");
+    await loadScript(base+"firebase-auth-compat.js");
+    await loadScript(base+"firebase-firestore-compat.js");
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }catch(e){
+    fb.failed=true; fb.ready=true; fb.status="Não consegui carregar o Firebase. Salvando só neste aparelho."; render(); return;
+  }
+  firebase.auth().onAuthStateChanged(async u=>{
+    fb.user=u; fb.ready=true;
+    uidKey=u?u.uid:"local";
+    S=loadState();
+    if(u)await pull();
+    if(V.name==="auth"&&u)V={name:"home"};
+    render();
+  });
+}
+function docRef(){return firebase.firestore().collection("embarque").doc(fb.user.uid)}
+async function pull(){
+  try{
+    fb.status="Sincronizando…";
+    const d=await docRef().get();
+    if(d.exists){
+      const remote=normalize(JSON.parse(d.data().data||"null"));
+      if((remote.updatedAt||0)>(S.updatedAt||0)){S=remote;store.set("embarque:"+uidKey,JSON.stringify(S))}
+      else if((S.updatedAt||0)>(remote.updatedAt||0)){await push()}
+    }else{await push()}
+    fb.status="Sincronizado";
+  }catch(e){fb.status="Sem conexão. As mudanças serão enviadas depois."}
+}
+async function push(){
+  if(!fb.user)return;
+  try{await docRef().set({data:JSON.stringify(S),updatedAt:S.updatedAt});fb.status="Sincronizado"}
+  catch(e){fb.status="Sem conexão. As mudanças serão enviadas depois."}
+}
+window.addEventListener("online",()=>{if(fb.user)push()});
+
+/* ============ VOZ ============ */
+let voices=[];
+function loadVoices(){try{voices=speechSynthesis.getVoices()||[]}catch(e){voices=[]}}
+if("speechSynthesis" in window){loadVoices();try{speechSynthesis.onvoiceschanged=()=>{loadVoices();if(V.name==="settings")render()}}catch(e){}}
+function voiceFor(bcp){
+  const low=bcp.toLowerCase();
+  const exact=voices.filter(v=>(v.lang||"").replace("_","-").toLowerCase()===low);
+  const best=exact.find(v=>/natural|enhanced|premium|neural|google|siri/i.test(v.name));
+  if(best)return best;
+  if(exact[0])return exact[0];
+  const p=low.slice(0,2);
+  return voices.find(v=>(v.lang||"").toLowerCase().startsWith(p))||null;
+}
+let loopToken=0;
+function speak(text,slow,onend){
+  if(!("speechSynthesis" in window)){toast("Este navegador não tem leitura em voz alta.");return}
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    const b=LANGS[S.lang].bcp; u.lang=b;
+    const v=voiceFor(b); if(v)u.voice=v;
+    u.rate=slow?SLOW_RATE:speedRate();
+    if(onend){u.onend=onend;u.onerror=onend}
+    speechSynthesis.speak(u);
+  }catch(e){toast("Não consegui tocar o áudio.")}
+}
+function say(text,slow){loopToken++;speak(text,slow)}
+/* Shadowing: toca a frase 3 vezes no ritmo escolhido, com pausa para você falar junto */
+function shadow(text){
+  const my=++loopToken; let n=0;
+  const gap=Math.max(1200,text.length*55);
+  const next=()=>{
+    if(my!==loopToken)return;
+    if(n>=3){toast("Shadowing concluído. Agora grave sozinho.");return}
+    n++; toast(`Fale junto: ${n} de 3`);
+    speak(text,false,()=>{if(my===loopToken)setTimeout(next,gap)});
+  };
+  next();
+}
+const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+let micBlocked=false, recActive=null;
+const canListen=()=>!!Rec&&!micBlocked;
+function listen(bcp,continuous){
+  return new Promise((res,rej)=>{
+    let r;
+    try{r=new Rec()}catch(e){rej("unsupported");return}
+    recActive=r;
+    r.lang=bcp; r.interimResults=false; r.maxAlternatives=continuous?1:4; r.continuous=!!continuous;
+    let done=false; const parts=[];
+    r.onresult=e=>{
+      if(continuous){for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)parts.push(e.results[i][0].transcript);return}
+      done=true;const alts=[];const r0=e.results[0];for(let i=0;i<r0.length;i++)alts.push(r0[i].transcript);res(alts);
+    };
+    r.onerror=e=>{if(continuous&&parts.length&&e.error==="no-speech")return;done=true;rej(e.error||"error")};
+    r.onend=()=>{recActive=null;if(done)return;if(parts.length)res([parts.join(" ")]);else rej("no-speech")};
+    try{loopToken++;if("speechSynthesis" in window)speechSynthesis.cancel();r.start()}catch(e){rej("start")}
+  });
+}
+
+/* ============ PONTUAÇÃO DA FALA ============ */
+function normText(s,lang){
+  s=String(s).toLowerCase().normalize("NFKC");
+  if(lang!=="ja")s=s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+  s=s.replace(/[’'`]/g,"").replace(/[^\p{L}\p{N}\s]/gu," ");
+  return s.replace(/\s+/g," ").trim();
+}
+function lcs(a,b){
+  const n=a.length,m=b.length,dp=[];
+  for(let i=0;i<=n;i++)dp.push(new Uint16Array(m+1));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)dp[i][j]=a[i]===b[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+  const ok=new Array(n).fill(false);let i=0,j=0;
+  while(i<n&&j<m){if(a[i]===b[j]){ok[i]=true;i++;j++}else if(dp[i+1][j]>=dp[i][j+1])i++;else j++}
+  return ok;
+}
+function scoreOne(target,hyp,lang){
+  if(lang==="ja"){
+    const chars=[...target], idx=[], toks=[];
+    chars.forEach((c,i)=>{if(!/[\p{P}\s]/u.test(c)){idx.push(i);toks.push(c.normalize("NFKC"))}});
+    const h=[...normText(hyp,"ja").replace(/\s/g,"")];
+    const ok=lcs(toks,h);
+    const parts=chars.map(c=>({text:c,ok:null}));
+    idx.forEach((ci,k)=>parts[ci].ok=ok[k]);
+    const hit=ok.filter(Boolean).length;
+    return {pct:toks.length?Math.round(hit/toks.length*100):0,parts,join:""};
+  }
+  const disp=target.split(/\s+/), idx=[], toks=[];
+  disp.forEach((w,i)=>{const n=normText(w,lang).replace(/ /g,"");if(n){idx.push(i);toks.push(n)}});
+  const h=normText(hyp,lang).split(" ").filter(Boolean);
+  const ok=lcs(toks,h);
+  const parts=disp.map(w=>({text:w,ok:null}));
+  idx.forEach((di,k)=>parts[di].ok=ok[k]);
+  const hit=ok.filter(Boolean).length;
+  return {pct:toks.length?Math.round(hit/toks.length*100):0,parts,join:" "};
+}
+function scoreBest(target,alts,lang){
+  let best=null;
+  for(const a of alts){const r=scoreOne(target,a,lang);r.heard=a;if(!best||r.pct>best.pct)best=r}
+  return best||{pct:0,parts:[],heard:""};
+}
+
+/* ============ UTILIDADES ============ */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+let toastTimer=null;
+function toast(msg){
+  let el=document.querySelector(".toast");
+  if(!el){el=document.createElement("div");el.className="toast";el.setAttribute("role","status");document.body.appendChild(el)}
+  el.textContent=msg;el.hidden=false;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},3000);
+}
+function daysUntil(dateStr){
+  if(!dateStr)return null;
+  const [y,m,d]=dateStr.split("-").map(Number);
+  const t=new Date(y,m-1,d), n=new Date();n.setHours(0,0,0,0);
+  return Math.round((t-n)/86400000);
+}
+function fmtDate(dateStr){const [y,m,d]=dateStr.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})}
+const secsToday=()=>S.days[today()]||0;
+function streak(){
+  let n=0;const d=new Date();
+  if((S.days[dstr(d)]||0)<60)d.setDate(d.getDate()-1);
+  while((S.days[dstr(d)]||0)>=60){n++;d.setDate(d.getDate()-1)}
+  return n;
+}
+const minLabel = m => m===60?"Full time":m+" min";
+
+/* ============ PLANO E TREINO DIÁRIO ============ */
+function focusScens(){
+  const f=hasPro()?LG().plan.focus:"travel";
+  return scensFor().filter(s=>f==="both"||s.track===f);
+}
+function remainingActs(){
+  const start=LG().level??0, out=[];
+  for(let lvl=start;lvl<3;lvl++)for(const sc of focusScens()){
+    const u=unit(sc.id,lvl);
+    for(const a of ACTS)if(!actDone(u,a.id))out.push({scen:sc.id,lvl,act:a.id});
+  }
+  return out;
+}
+function chunkOrder(){
+  const srs=LG().srs;
+  return chunks().map((c,i)=>{const b=Math.max(srs[`c|${i}|0`]?.b??-1,srs[`c|${i}|1`]?.b??-1);return {i,b}})
+    .sort((a,b)=>a.b-b.b||a.i-b.i).map(x=>x.i);
+}
+function buildSession(){
+  const lg=LG(), m=lg.plan.minutes, cfg=SESSION_CFG[m], steps=[];
+  if(lg.level===null)steps.push({k:"test"});
+  const due=dueKeys().length;
+  if(due)steps.push({k:"review",n:Math.min(due,cfg.rev)});
+  if(cfg.ch&&chunks().length)steps.push({k:"chunks",n:cfg.ch});
+  remainingActs().slice(0,cfg.acts).forEach(a=>steps.push(Object.assign({k:"act"},a)));
+  if(cfg.talk&&(gemKey()||inClaude()))steps.push({k:"talk"});
+  if(cfg.listen)steps.push({k:"listen",min:cfg.listen});
+  return {date:today(),minutes:m,steps};
+}
+const stepDone = s => s.done || (s.k==="act"&&actDone(unit(s.scen,s.lvl),s.act)) || (s.k==="test"&&LG().level!==null);
+function getSession(){
+  const lg=LG(); let s=lg.session;
+  const fresh=!s||s.date!==today()||(s.minutes!==lg.plan.minutes&&!s.steps.some(x=>x.done));
+  if(fresh){lg.session=buildSession();save()}
+  return lg.session;
+}
+function stepInfo(s){
+  if(s.k==="test")return {t:"Teste de nível",d:"12 perguntas, cerca de 8 min",min:8};
+  if(s.k==="review")return {t:"Revisão",d:`${s.n} ${s.n===1?"frase":"frases"} que estão no dia de revisar`,min:Math.ceil(s.n/2)};
+  if(s.k==="talk")return {t:"Conversa livre com IA",d:"Role-play com correção, cerca de 5 min",min:5};
+  if(s.k==="chunks")return {t:"Blocos de frases",d:`${s.n} ${s.n===1?"bloco":"blocos"} com shadowing`,min:s.n*2};
+  if(s.k==="act")return {t:actName(s.act),d:`${scName(s.scen)} · ${LEVELS[s.lvl]}`,min:5};
+  return {t:"Escuta real",d:`${s.min} min de áudio nativo, sem pausar`,min:s.min};
+}
+function startStep(i){
+  const s=getSession().steps[i];
+  if(s.k==="test")startTest(i);
+  else if(s.k==="review")startReview(s.n,i);
+  else if(s.k==="chunks")startChunks(s.n,i);
+  else if(s.k==="act")startLesson(s.scen,s.lvl,s.act,i);
+  else if(s.k==="talk"){LT=null;go("talk",{step:i})}
+  else go("listen",{step:i});
+}
+function markStep(i){
+  const s=LG().session;
+  if(s&&s.date===today()&&s.steps[i]){s.steps[i].done=true;save()}
+}
+function nextStepIndex(){const s=getSession();return s.steps.findIndex(x=>!stepDone(x))}
+function planInfo(){
+  const p=LG().plan, rem=remainingActs(), perDay=SESSION_CFG[p.minutes].acts;
+  const left=daysUntil(p.date);
+  const info={perDay,rem:rem.length,left,days:Math.ceil(rem.length/perDay)};
+  if(left!==null&&left>0){
+    info.capacity=left*perDay;
+    info.fits=info.capacity>=rem.length;
+    const need=Math.ceil(rem.length/left);
+    info.needMin=need<=1?15:need<=2?30:60;
+  }
+  info.schedule=[];
+  const days=Math.min(7,left!==null&&left>0?left:7);
+  for(let i=0,k=0;i<days&&k<rem.length;i++){info.schedule.push({date:addDays(i),items:rem.slice(k,k+perDay)});k+=perDay}
+  return info;
+}
+
+/* ============ NAVEGAÇÃO ============ */
+let V={name:"home"};
+let LS=null;
+let confirmReset=false;
+function go(name,extra){V=Object.assign({name},extra||{});confirmReset=false;stopAudio();render();window.scrollTo(0,0)}
+function stopAudio(){try{recActive&&recActive.abort()}catch(e){}recActive=null;loopToken++;try{speechSynthesis.cancel()}catch(e){}}
+
+/* ============ TELAS ============ */
+const app=document.getElementById("app");
+function render(){
+  if(fb.enabled&&!fb.ready){app.innerHTML=`<div class="wrap"><p class="muted center authbox">Carregando…</p></div>`;return}
+  if(fb.enabled&&!fb.failed&&!fb.user&&!fb.localMode&&V.name!=="auth")V={name:"auth"};
+  const views={home:vHome,auth:vAuth,unit:vUnit,lesson:vLesson,plan:vPlan,settings:vSettings,result:vResult,answers:vAnswers,method:vMethod,listen:vListen,talk:vTalk};
+  app.innerHTML=`<div class="wrap">${(views[V.name]||vHome)()}</div>`;
+  const f=app.querySelector("[autofocus]");if(f)f.focus();
+  if(V.name==="talk"&&LT&&!LT.summary)window.scrollTo(0,document.body.scrollHeight);
+}
+const bcp=()=>LANGS[S.lang].bcp;
+const backBtn=(to="home")=>`<button class="iconbtn" data-act="go" data-to="${to}" aria-label="Voltar">${ICONS.back}</button>`;
+
+function topBar(){
+  const synced=fb.user?`<span class="dot on"></span>Conta`:`<span class="dot"></span>Local`;
+  return `<div class="top"><div class="brand"><i aria-hidden="true"></i>EMBARQUE</div><span class="spacer"></span>
+  <button class="iconbtn" data-act="go" data-to="settings" aria-label="Ajustes">${synced}${ICONS.gear}</button></div>`;
+}
+function langChips(){
+  return `<div class="langs" role="group" aria-label="Idioma">${Object.entries(LANGS).map(([k,l])=>
+    `<button class="lang" data-act="lang" data-lang="${k}" aria-pressed="${k===S.lang}"><b>${l.tag}</b><span>${l.name}</span></button>`).join("")}</div>`;
+}
+function board(){
+  const p=LG().plan, left=daysUntil(p.date), goal=p.minutes, mins=Math.floor(secsToday()/60);
+  const pct=Math.min(100,Math.round(mins/goal*100)), st=streak();
+  let head;
+  if(left!==null&&left>=0){
+    const digits=String(left).padStart(2,"0").split("").map(d=>`<span class="d">${d}</span>`).join("");
+    head=`<div><div class="label">Partida em</div><div class="flap">${digits}<small>${left===1?"DIA":"DIAS"}</small></div>
+      <div class="dest">${esc(LANGS[S.lang].where)} · ${fmtDate(p.date)}</div></div>
+      <button class="btn small" data-act="go" data-to="plan">Plano</button>`;
+  }else{
+    head=`<div><div class="label">Sem data marcada</div><div class="dest" style="font-size:1.15rem">Defina a data da viagem ou da entrevista</div></div>
+      <button class="btn small" data-act="go" data-to="plan">Plano</button>`;
+  }
+  return `<section class="board" aria-label="Seu plano">${head}
+    <div class="meter"><div class="stats"><span>HOJE ${mins}/${goal===60?"60+":goal} MIN</span><span>SEQUÊNCIA ${st} ${st===1?"DIA":"DIAS"}</span></div>
+    <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div></div></section>`;
+}
+function sessionCard(){
+  const s=getSession(), ni=nextStepIndex();
+  const total=s.steps.reduce((a,x)=>a+stepInfo(x).min,0);
+  const rows=s.steps.map((x,i)=>{const inf=stepInfo(x),dn=stepDone(x);
+    return `<li class="${dn?"done":""}${i===ni?" cur":""}"><span class="ck" aria-hidden="true">${dn?ICONS.check:i+1}</span>
+      <span class="txt"><b>${esc(inf.t)}</b><span class="small muted">${esc(inf.d)}</span></span>
+      ${dn?"":`<button class="btn small ${i===ni?"sign":"ghost"}" data-act="step" data-i="${i}">${i===ni?"Começar":"Fazer"}</button>`}</li>`}).join("");
+  const foot=ni<0?`<p class="small"><b>Treino de hoje concluído.</b> Volte amanhã para a revisão. Se quiser mais, abra qualquer cenário.</p>`:"";
+  return `<section class="session" aria-label="Treino de hoje"><div class="row"><span class="label">Treino de hoje</span><span class="spacer"></span>
+    <button class="linkbtn small" data-act="go" data-to="plan">${minLabel(s.minutes)} · ~${total} min</button></div>
+    <ol class="steps">${rows}</ol>${foot}</section>`;
+}
+function gatesHTML(track){
+  const lg=LG();
+  return scensFor().filter(s=>s.track===track).map(sc=>`<article class="gate ${track}"><div class="gate-head">${ICONS[sc.id]}<h3>${esc(sc.name)}</h3><span class="code">${sc.code}</span></div>
+    <div class="lv">${LEVELS.map((L,i)=>{const u=unit(sc.id,i);const rec=lg.level===i;
+      return `<button data-act="unit" data-scen="${sc.id}" data-lvl="${i}"><span>${L}</span><span class="pips" aria-label="${ACTS.filter(a=>actDone(u,a.id)).length} de 3 concluídas">${ACTS.map(a=>`<i class="${actDone(u,a.id)?"done":""}"></i>`).join("")}</span>${rec?`<span class="rec">SEU NÍVEL</span>`:""}</button>`}).join("")}</div></article>`).join("");
+}
+function vHome(){
+  const lg=LG(), due=dueKeys().length;
+  const travelSoon=[...SOON.travel, ...SCEN.filter(s=>s.track==="travel"&&!C[S.lang][s.id]).map(s=>s.name)];
+  const pro=hasPro()?`<section class="stack"><div class="row"><h2>Profissional</h2></div>
+    <div class="gates">${gatesHTML("pro")}</div>
+    <button class="feature" data-act="go" data-to="answers"><span class="txt"><span class="label">Entrevista</span><h3>Minhas respostas</h3>
+      <span class="small muted">Escreva suas respostas para as 9 perguntas mais comuns e treine falando. ${Object.values(S.answers).filter(a=>a&&a.trim()).length} de ${questions().length} prontas.</span></span><span class="chev">›</span></button>
+    <div class="soon">${SOON.pro.map(s=>`<span>${s}</span>`).join("")}</div></section>`
+    :`<p class="small muted">A trilha Profissional (entrevista e reuniões) está disponível em inglês.</p>`;
+  const talkCard=`<button class="feature talkf" data-act="talkopen"><span class="txt"><span class="label">Novo</span><h3>Conversa livre com IA</h3>
+      <span class="small muted">${AI.kind?"Role-play de hotel, imigração, entrevista e mais, com correção a cada resposta.":"Converse de verdade com uma IA que corrige você. Grátis: toque para configurar."}</span></span><span class="chev">›</span></button>`;
+  return `${topBar()}${langChips()}${board()}${sessionCard()}${talkCard}
+  <section class="stack"><div class="row"><h2>Viagem</h2><span class="spacer"></span><span class="small muted">${lg.level===null?"Nível não avaliado":`Seu nível: <b>${LEVELS[lg.level]}</b>`}</span></div>
+  <div class="gates">${gatesHTML("travel")}</div>
+  <div class="stack" style="gap:8px"><span class="label">Em breve</span><div class="soon">${travelSoon.map(s=>`<span>${s}</span>`).join("")}</div></div></section>
+  ${pro}
+  <section class="tools">
+    <button class="tool" data-act="review"><b>Revisão</b><span class="small muted">${due?`${due} para hoje`:`${srsCount()} frases guardadas`}</span></button>
+    <button class="tool" data-act="chunksx"><b>Blocos</b><span class="small muted">${chunks().length} frases-coringa</span></button>
+    <button class="tool" data-act="go" data-to="method"><b>Método e sites</b><span class="small muted">Como estudar e onde ouvir</span></button>
+    <button class="tool" data-act="test"><b>Teste de nível</b><span class="small muted">${lg.level===null?"Ainda não feito":"Refazer"}</span></button>
+  </section>`;
+}
+
+function vAuth(){
+  const mode=V.mode||"login";
+  const title=mode==="signup"?"Criar conta":mode==="reset"?"Redefinir senha":"Entrar";
+  return `<div class="authbox stack">
+  <div class="brand"><i aria-hidden="true"></i>EMBARQUE</div>
+  <h1>${title}</h1>
+  <p class="muted">${mode==="reset"?"Enviaremos um link para o seu e-mail.":"Sua conta guarda o progresso e sincroniza iPhone, Android e Windows."}</p>
+  <form class="stack" id="authform">
+    <div class="field"><label for="au-email">E-mail</label><input id="au-email" type="email" autocomplete="email" required autofocus></div>
+    ${mode!=="reset"?`<div class="field"><label for="au-pass">Senha</label><input id="au-pass" type="password" autocomplete="${mode==="signup"?"new-password":"current-password"}" minlength="6" required></div>`:""}
+    <p class="err" id="au-err" hidden></p>
+    <button class="btn sign block" type="submit">${mode==="signup"?"Criar conta":mode==="reset"?"Enviar link":"Entrar"}</button>
+  </form>
+  <div class="row">
+    ${mode!=="login"?`<button class="btn ghost" data-act="authmode" data-mode="login">Já tenho conta</button>`:`<button class="btn ghost" data-act="authmode" data-mode="signup">Criar conta</button><button class="btn ghost" data-act="authmode" data-mode="reset">Esqueci a senha</button>`}
+  </div>
+  <button class="btn ghost small" data-act="localmode">Continuar sem conta (salva só neste aparelho)</button>
+  </div>`;
+}
+const AUTH_ERR={
+  "auth/invalid-email":"E-mail inválido.","auth/user-not-found":"Não existe conta com esse e-mail.",
+  "auth/wrong-password":"Senha incorreta.","auth/invalid-credential":"E-mail ou senha incorretos.",
+  "auth/email-already-in-use":"Já existe uma conta com esse e-mail. Use Entrar.","auth/weak-password":"A senha precisa ter pelo menos 6 caracteres.",
+  "auth/network-request-failed":"Sem conexão com a internet.","auth/too-many-requests":"Muitas tentativas. Espere alguns minutos."
+};
+async function submitAuth(){
+  const mode=V.mode||"login", email=document.getElementById("au-email").value.trim();
+  const passEl=document.getElementById("au-pass"), err=document.getElementById("au-err");
+  err.hidden=true;
+  try{
+    const a=firebase.auth();
+    if(mode==="signup")await a.createUserWithEmailAndPassword(email,passEl.value);
+    else if(mode==="reset"){await a.sendPasswordResetEmail(email);toast("Link enviado. Confira seu e-mail.");go("auth",{mode:"login"});return}
+    else await a.signInWithEmailAndPassword(email,passEl.value);
+  }catch(e){err.textContent=AUTH_ERR[e.code]||"Não deu certo: "+(e.message||e.code);err.hidden=false}
+}
+
+function vUnit(){
+  const {scen,lvl}=V, u=unit(scen,lvl), sc=scenById(scen);
+  const preview=lines(scen,lvl).slice(0,4).map(l=>`<div class="bubble ${l[0]}" lang="${bcp()}">${esc(l[1])}<small>${esc(l[2])}</small></div>`).join("");
+  return `<div class="lhead">${backBtn()}
+    <div class="t"><span class="label">${esc(LANGS[S.lang].tag)} · ${TRACKS[sc.track]} · ${LEVELS[lvl]}</span><h2>${esc(sc.name)}</h2></div></div>
+  <div class="acts">${ACTS.map((a,i)=>{const done=actDone(u,a.id);const sc2=u[a.id];
+    return `<button class="act ${done?"done":""}" data-act="start" data-scen="${scen}" data-lvl="${lvl}" data-mode="${a.id}">
+      <span class="n">${done?ICONS.check:i+1}</span><span class="txt"><h3>${a.name}</h3><span class="small muted">${a.desc}</span></span>
+      <span class="score">${sc2?sc2+"%":""}</span></button>`}).join("")}</div>
+  <div class="card"><span class="label">Dica</span><p class="tip">${esc(C[S.lang][scen].tip)}</p></div>
+  <div class="stack"><span class="label">Prévia do diálogo</span><div class="chat">${preview}</div></div>`;
+}
+
+/* ----- Montagem de lições ----- */
+function launch(ls){LS=ls;go("lesson");autoPlay()}
+function autoPlay(){
+  const it=LS&&LS.items[LS.i];if(!it)return;
+  if(it.type==="conv")say(it.them[1]);
+  else if(it.type==="listen")say(it.line[1]);
+  else if(it.type==="ans")say(it.q.q);
+}
+function startLesson(scen,lvl,mode,step){
+  const ls=lines(scen,lvl), base={mode,scen,lvl,i:0,scores:[],step};
+  let items;
+  if(mode==="rep")items=ls.map((l,i)=>({type:"rep",line:l,key:`s|${scen}|${lvl}|${i}`}));
+  else if(mode==="conv"){items=[];for(let i=0;i<ls.length;i+=2)items.push({type:"conv",them:ls[i],you:ls[i+1],idx:i,key:`s|${scen}|${lvl}|${i+1}`})}
+  else{
+    const pool=ls.concat(otherLines(scen,lvl));
+    items=pick(ls.map((l,i)=>({l,i})),6).map((o,k)=>{const it=makeChoice(o.l,pool,k%2===0?"listen":"meaning");it.key=`s|${scen}|${lvl}|${o.i}`;return it});
+  }
+  launch(Object.assign(base,{items}));
+}
+function otherLines(scen,lvl){
+  const sc=scenById(scen), out=[];
+  for(const s of scensFor())if(s.track===sc.track)for(let l=0;l<3;l++)if(!(s.id===scen&&l===lvl)&&Math.abs(l-lvl)<=1)out.push(...lines(s.id,l));
+  return out;
+}
+function makeChoice(line,pool,kind){
+  const field=kind==="listen"?2:1;
+  const seen=new Set([line[field]]);const distract=[];
+  for(const o of shuffle(pool)){if(!seen.has(o[field])){seen.add(o[field]);distract.push(o)}if(distract.length===3)break}
+  return {type:kind,line,opts:shuffle([line,...distract]).map(o=>o[field]),answer:line[field]};
+}
+function startTest(step){
+  const items=[];
+  const travel=scensFor().filter(s=>s.track==="travel");
+  for(let lvl=0;lvl<3;lvl++){
+    const pool=[];travel.forEach(sc=>pool.push(...lines(sc.id,lvl)));
+    const chosen=pick(pool,4);
+    chosen.slice(0,3).forEach((l,i)=>{const it=makeChoice(l,pool,i===1?"meaning":"listen");it.lvl=lvl;items.push(it)});
+    const sp=chosen[3];
+    const it=canListen()?{type:"speak",line:sp}:makeChoice(sp,pool,"listen");
+    it.lvl=lvl;items.push(it);
+  }
+  launch({mode:"test",i:0,items,results:[],step});
+}
+function startReview(n,step){
+  const keys=dueKeys().slice(0,n||15);
+  if(!keys.length){toast(srsCount()?"Nada para revisar hoje. Volte amanhã.":"Pratique algumas frases primeiro. Elas entram na revisão automaticamente.");return}
+  launch({mode:"review",i:0,scores:[],step,items:keys.map(k=>Object.assign({type:"rev",key:k},keyItem(k)))});
+}
+function startChunks(n,step){
+  const items=[];
+  chunkOrder().slice(0,n||3).forEach(ci=>{const ch=chunks()[ci];
+    ch[2].forEach((ex,ei)=>items.push({type:"rep",line:["v",ex[0],ex[1],ex[2]],key:`c|${ci}|${ei}`,chunk:ch}))});
+  launch({mode:"chunks",i:0,scores:[],step,items});
+}
+function readyAnswers(){return questions().filter(q=>{const a=(S.answers[q.id]||"").trim();return a&&!a.includes("[")})}
+function startAnswers(){
+  const qs=readyAnswers();
+  if(!qs.length){toast("Escreva pelo menos uma resposta completa (sem colchetes) para treinar.");return}
+  launch({mode:"answers",i:0,scores:[],items:qs.map(q=>({type:"ans",q,text:S.answers[q.id].trim()}))});
+}
+
+/* ----- Tela da lição ----- */
+const MODE_NAMES={test:"Teste de nível",review:"Revisão",chunks:"Blocos de frases",answers:"Minhas respostas"};
+function lessonTitle(){
+  if(LS.mode==="test")return {k:`${LANGS[S.lang].tag} · Teste de nível`,t:"Pergunta "+(LS.i+1)+" de "+LS.items.length};
+  if(MODE_NAMES[LS.mode])return {k:LANGS[S.lang].tag,t:MODE_NAMES[LS.mode]};
+  return {k:`${scName(LS.scen)} · ${LEVELS[LS.lvl]}`,t:actName(LS.mode)};
+}
+function speedSeg(){
+  return `<div class="speed" role="radiogroup" aria-label="Velocidade da voz"><span class="label">Voz</span>${SPEEDS.map(x=>
+    `<button role="radio" aria-checked="${S.speed===x.id}" data-act="speed" data-speed="${x.id}">${x.t}</button>`).join("")}</div>`;
+}
+function vLesson(){
+  if(!LS)return vHome();
+  const it=LS.items[LS.i], tt=lessonTitle(), pct=Math.round(LS.i/LS.items.length*100);
+  const body={rep:vRep,conv:vConv,speak:vSpeakTest,rev:vRev,ans:vAns}[it.type]||vChoice;
+  return `<div class="lhead"><button class="iconbtn" data-act="quit" aria-label="Sair da lição">${ICONS.back}</button>
+    <div class="t"><span class="label">${esc(tt.k)}</span><h3>${esc(tt.t)}</h3></div><span class="label">${LS.i+1}/${LS.items.length}</span></div>
+  <div class="progress" aria-hidden="true"><i style="width:${pct}%"></i></div>${speedSeg()}${body(it)}`;
+}
+function phraseHTML(text,res){
+  if(!res)return esc(text);
+  return res.parts.map(p=>p.ok===null?esc(p.text):`<span class="${p.ok?"w-ok":"w-miss"}">${esc(p.text)}</span>`).join(res.join);
+}
+const scored=()=>LS.res&&!LS.res.error&&!LS.res.self?LS.res:null;
+function speakBlock(opts={}){
+  const r=LS.res;
+  let resHTML="";
+  if(r&&r.error)resHTML=`<div class="result"><p class="err">${esc(r.error)}</p></div>`;
+  else if(r&&r.self)resHTML=`<div class="result"><p>Marcado como praticado.</p></div>`;
+  else if(r)resHTML=`<div class="result"><span class="pct ${r.pct>=PASS_SPEAK?"good":"bad"}">${r.pct}%</span>
+    <p class="small">${r.pct>=90?"Excelente pronúncia.":r.pct>=PASS_SPEAK?"Muito bom. Veja as palavras em vermelho.":"Tente de novo. Ouça uma vez e repita no mesmo ritmo."}</p>
+    <p class="small muted">Entendi: “${esc(r.heard)}”</p></div>`;
+  const long=opts.long;
+  const micBtn=canListen()
+    ?`<button class="mic ${LS.listening?"on":""}" data-act="mic" aria-label="${LS.listening?"Parar de gravar":"Falar"}">${ICONS.mic}</button>
+      <div class="small muted">${LS.listening?(long?"Gravando… toque de novo quando terminar.":"Ouvindo… fale agora."):(long?"Toque, responda e toque de novo para terminar.":"Toque e fale a frase.")}</div>`
+    :`<button class="btn" data-act="selfok">Falei em voz alta</button>
+      <div class="small muted">${micBlocked?"O microfone não está liberado aqui.":"Este navegador não reconhece fala."} Use o app instalado no Chrome, Edge ou Safari.</div>`;
+  return `<div class="speakrow">${micBtn}</div>${resHTML}`;
+}
+function listenBtns(text,withShadow){
+  return `<div class="row"><button class="btn" data-act="say" data-text="${esc(text)}">${ICONS.play}Ouvir</button>
+    <button class="btn ghost" data-act="say" data-slow="1" data-text="${esc(text)}">${ICONS.slow}Devagar</button>
+    ${withShadow?`<button class="btn ghost" data-act="shadow" data-text="${esc(text)}">${ICONS.loop}Shadowing 3x</button>`:""}</div>`;
+}
+const nextLabel=()=>LS.i===LS.items.length-1?"Concluir":"Próxima";
+function vRep(it){
+  const l=it.line, sc=LS.scen?scenById(LS.scen):null;
+  const chunkHead=it.chunk?`<div class="chunk"><span class="label">Bloco</span><p class="pattern" lang="${bcp()}">${esc(it.chunk[0])}</p><p class="small muted">${esc(it.chunk[1])}</p></div>`:"";
+  return `${chunkHead}<div class="phrase-card">
+    <span class="who ${l[0]}">${l[0]==="v"?"Você":esc(sc?sc.them:"")}</span>
+    <p class="phrase" lang="${bcp()}">${phraseHTML(l[1],scored())}</p>
+    ${l[3]?`<p class="romaji">${esc(l[3])}</p>`:""}
+    <p class="pt">${esc(l[2])}</p>
+    ${listenBtns(l[1],true)}
+    ${speakBlock()}
+  </div>
+  <div class="lfoot"><button class="btn sign" data-act="next">${nextLabel()}</button></div>`;
+}
+function vConv(it){
+  const sc=scenById(LS.scen), ls=lines(LS.scen,LS.lvl), r=scored();
+  const hist=ls.slice(0,it.idx).map(l=>`<div class="bubble ${l[0]}" lang="${bcp()}">${esc(l[1])}</div>`).join("");
+  return `<div class="chat">${hist}
+    <div class="bubble a" lang="${bcp()}"><small>${esc(sc.them)}</small>${esc(it.them[1])}</div></div>
+  <div class="row"><button class="btn small" data-act="say" data-text="${esc(it.them[1])}">${ICONS.play}Ouvir de novo</button>
+  <span class="small muted">${esc(it.them[2])}</span></div>
+  <div class="phrase-card">
+    <span class="who v">Sua vez</span>
+    <p>Responda: <b>${esc(it.you[2])}</b></p>
+    ${LS.reveal||r?`<p class="phrase" lang="${bcp()}">${phraseHTML(it.you[1],r)}</p>${it.you[3]?`<p class="romaji">${esc(it.you[3])}</p>`:""}${listenBtns(it.you[1])}`
+      :`<button class="btn ghost" data-act="reveal">Ver a frase</button>`}
+    ${speakBlock()}
+  </div>
+  <div class="lfoot"><button class="btn sign" data-act="next">${nextLabel()}</button></div>`;
+}
+function vRev(it){
+  const r=scored(), shown=LS.reveal||r;
+  const selfBtns=shown&&LS.revOk===undefined&&!r
+    ?`<div class="row"><button class="btn" data-act="revself" data-ok="1">Lembrei</button><button class="btn ghost" data-act="revself" data-ok="0">Não lembrei</button></div>`:"";
+  const verdict=LS.revOk===undefined?"":`<p class="small ${LS.revOk?"":"err"}">${LS.revOk?"Boa! Volta daqui a alguns dias.":"Volta amanhã para você fixar."}</p>`;
+  return `<div class="phrase-card">
+    <span class="label">${esc(it.ctx)}</span>
+    <p class="muted">Como você diz isto em ${esc(LANGS[S.lang].name.toLowerCase())}?</p>
+    <p class="phrase" style="font-size:1.3rem">${esc(it.pt)}</p>
+    ${shown?`<p class="phrase" lang="${bcp()}">${phraseHTML(it.text,r)}</p>${it.ro?`<p class="romaji">${esc(it.ro)}</p>`:""}${listenBtns(it.text,true)}`
+      :`<button class="btn ghost" data-act="reveal" style="align-self:flex-start">Mostrar resposta</button>`}
+    ${selfBtns}${verdict}
+    ${speakBlock()}
+  </div>
+  <div class="lfoot"><button class="btn sign" data-act="next">${nextLabel()}</button></div>`;
+}
+function vAns(it){
+  const r=scored();
+  return `<div class="chat"><div class="bubble a" lang="en"><small>Entrevistador</small>${esc(it.q.q)}</div></div>
+  <div class="row"><button class="btn small" data-act="say" data-text="${esc(it.q.q)}">${ICONS.play}Ouvir de novo</button><span class="small muted">${esc(it.q.pt)}</span></div>
+  <div class="phrase-card"><span class="who v">Sua resposta</span>
+    ${LS.reveal||r?`<p class="answer" lang="${bcp()}">${phraseHTML(it.text,r)}</p>${listenBtns(it.text,true)}`
+      :`<p class="small muted">Tente responder de memória. Se travar, veja sua resposta.</p><button class="btn ghost" data-act="reveal" style="align-self:flex-start">Ver minha resposta</button>`}
+    ${speakBlock({long:true})}
+  </div>
+  <div class="lfoot"><button class="btn sign" data-act="next">${nextLabel()}</button></div>`;
+}
+function vChoice(it){
+  const a=LS.answered;
+  const q=it.type==="listen"
+    ?`<p class="muted">Escute e escolha o significado.</p>
+      ${a?`<p class="phrase" lang="${bcp()}">${esc(it.line[1])}</p>`:""}
+      <div class="listen-big"><button class="btn sign" data-act="say" data-text="${esc(it.line[1])}">${ICONS.play}Ouvir</button>
+      <button class="btn" data-act="say" data-slow="1" data-text="${esc(it.line[1])}">${ICONS.slow}Devagar</button></div>`
+    :`<p class="muted">Como se diz isto?</p><p class="phrase" style="font-size:1.3rem">${esc(it.line[2])}</p>`;
+  const opts=it.opts.map((o,i)=>{
+    let cls="";if(a){if(o===it.answer)cls="right";else if(i===a.i)cls="wrong"}
+    return `<button class="opt ${cls}" data-act="choose" data-i="${i}" ${a?"disabled":""} ${it.type==="meaning"?`lang="${bcp()}"`:""}>${esc(o)}</button>`}).join("");
+  return `<div class="phrase-card">${q}<div class="opts">${opts}</div>
+    ${a?`<p class="small ${a.ok?"":"err"}">${a.ok?"Certo!":"A resposta certa está em verde."}</p>`:""}</div>
+  <div class="lfoot"><button class="btn sign" data-act="next" ${a?"":"disabled"}>${LS.i===LS.items.length-1?"Ver resultado":"Próxima"}</button></div>`;
+}
+function vSpeakTest(it){
+  return `<div class="phrase-card"><span class="who v">Teste de fala</span>
+    <p class="muted">Leia em voz alta:</p>
+    <p class="phrase" lang="${bcp()}">${phraseHTML(it.line[1],scored())}</p>
+    ${it.line[3]?`<p class="romaji">${esc(it.line[3])}</p>`:""}
+    <p class="pt small">${esc(it.line[2])}</p>
+    ${speakBlock()}
+  </div>
+  <div class="lfoot"><button class="btn sign" data-act="next">${LS.res&&!LS.res.error?(LS.i===LS.items.length-1?"Ver resultado":"Próxima"):"Pular"}</button></div>`;
+}
+
+function finishLesson(){
+  const step=LS.step;
+  if(LS.mode==="test"){
+    const per=[0,1,2].map(l=>{const r=LS.results.filter(x=>x.lvl===l);return Math.round(r.filter(x=>x.ok).length/Math.max(1,r.length)*100)});
+    let level=0;
+    if(per[0]>=75){level=1;if(per[1]>=75)level=2}
+    LG().level=level;LG().test={date:today(),per};
+    LG().session=null; save();
+    go("result",{kind:"test",per,level});
+    return;
+  }
+  let score;
+  if(LS.mode==="quiz")score=Math.round(LS.scores.filter(Boolean).length/LS.items.length*100);
+  else{const vals=LS.scores.filter(x=>typeof x==="number");score=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0}
+  if(LS.scen&&score>0)setUnit(LS.scen,LS.lvl,LS.mode,score);
+  if(step!=null&&(score>0||LS.mode==="quiz"))markStep(step);
+  go("result",{kind:LS.mode,score,scen:LS.scen,lvl:LS.lvl,fromSession:step!=null,n:LS.items.length});
+}
+function continueBtn(){
+  const ni=nextStepIndex();
+  if(ni<0)return "";
+  return `<button class="btn sign" data-act="step" data-i="${ni}">Continuar treino: ${esc(stepInfo(getSession().steps[ni]).t)}</button>`;
+}
+function vResult(){
+  if(V.kind==="test"){
+    return `<h1>Resultado do teste</h1>
+    <span class="stamp">Nível ${LEVELS[V.level]}</span>
+    <div class="card"><div class="lvbars">${LEVELS.map((L,i)=>`<div class="lvbar"><span>${L}</span><div class="bar light"><i style="width:${V.per[i]}%"></i></div><span class="pctx">${V.per[i]}%</span></div>`).join("")}</div>
+    <p class="small muted">Para subir de nível no teste, é preciso 75% de acerto no nível anterior.</p></div>
+    <p>Suas atividades começam no nível <b>${LEVELS[V.level]}</b>. O treino de hoje já foi montado a partir dele.</p>
+    <div class="row">${continueBtn()}<button class="btn" data-act="go" data-to="plan">Ajustar plano</button><button class="btn ghost" data-act="go" data-to="home">Início</button></div>`;
+  }
+  const isQuiz=V.kind==="quiz", passed=isQuiz?V.score>=PASS_QUIZ:V.score>0;
+  const title=V.scen?actName(V.kind):MODE_NAMES[V.kind];
+  let msg;
+  if(isQuiz)msg=passed?"Nível concluído neste cenário.":"Faltou pouco. Revise as frases e tente de novo; são precisos 80%.";
+  else if(V.score<=0)msg="Nenhuma frase foi praticada, então a atividade não foi registrada.";
+  else if(V.kind==="review")msg="As frases que você acertou voltam daqui a alguns dias; as que errou voltam amanhã.";
+  else msg="Atividade registrada. As frases praticadas entram na sua revisão.";
+  const sub=V.scen?`${esc(scName(V.scen))} · ${LEVELS[V.lvl]}`:`${V.n} ${V.n===1?"item":"itens"}`;
+  const again=V.scen?`<button class="btn" data-act="start" data-scen="${V.scen}" data-lvl="${V.lvl}" data-mode="${V.kind}">Repetir</button>`
+    :V.kind==="answers"?`<button class="btn" data-act="go" data-to="answers">Editar respostas</button>`:"";
+  return `<h1>${esc(title)}</h1>
+  <div class="card"><span class="pct ${passed?"good":"bad"}" style="font-size:2.4rem">${V.score}%</span><p>${msg}</p>
+  <p class="small muted">${sub}</p></div>
+  <div class="row">${continueBtn()}${again}<button class="btn ghost" data-act="go" data-to="home">Início</button></div>`;
+}
+
+function vPlan(){
+  const p=LG().plan, info=planInfo(), cfg=SESSION_CFG[p.minutes];
+  let summary;
+  if(info.left===null)summary=`<p>Sem data marcada. Com ${minLabel(p.minutes)} por dia você conclui as <b>${info.rem} atividades</b> restantes em cerca de <b>${info.days} dias</b>.</p>`;
+  else if(info.left<=0)summary=`<p class="err">A data escolhida já passou. Escolha uma data futura.</p>`;
+  else if(info.fits)summary=`<p>Faltam <b>${info.left} dias</b>. Com ${minLabel(p.minutes)} por dia você conclui as <b>${info.rem} atividades</b> restantes a tempo.</p>`;
+  else summary=`<p>Faltam <b>${info.left} dias</b> e ${info.rem} atividades. Com ${minLabel(p.minutes)} você faz ${info.capacity}. Para terminar tudo, use <b>${minLabel(info.needMin)}</b> por dia${hasPro()?" ou escolha um foco só":""}.</p>`;
+  const sched=info.schedule.length?`<div class="days">${info.schedule.map((d,i)=>`<div class="day"><span class="dd">${i===0?"HOJE":d.date.toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit"}).toUpperCase()}</span>
+    <ul>${d.items.map(x=>`<li>${esc(actName(x.act))} <span class="muted">· ${esc(scName(x.scen))}, ${LEVELS[x.lvl]}</span></li>`).join("")}</ul></div>`).join("")}</div>`
+    :`<p class="muted">Nenhuma atividade pendente a partir do seu nível.</p>`;
+  const focus=hasPro()?`<div class="field"><span>Foco</span><div class="seg three" role="radiogroup">${[["travel","Viagem"],["pro","Profissional"],["both","Ambos"]].map(([v,t])=>
+    `<input type="radio" name="focus" id="f-${v}" value="${v}" ${p.focus===v?"checked":""} data-change="planfocus"><label for="f-${v}"><b>${t}</b></label>`).join("")}</div></div>`:"";
+  return `<div class="lhead">${backBtn()}<div class="t"><span class="label">${esc(LANGS[S.lang].name)}</span><h2>Plano de estudo</h2></div></div>
+  <div class="card">
+    <div class="field"><label for="pl-date">Data da viagem ou entrevista</label><input id="pl-date" type="date" min="${today()}" value="${esc(p.date)}" data-change="plandate"></div>
+    ${p.date?`<button class="btn ghost small" data-act="cleardate" style="align-self:flex-start">Remover data</button>`:""}
+    <div class="field"><span>Tempo por dia</span>
+      <div class="seg" role="radiogroup">${MINUTES.map(m=>`<input type="radio" name="mins" id="m${m.v}" value="${m.v}" ${p.minutes===m.v?"checked":""} data-change="planmin"><label for="m${m.v}"><b>${m.v===60?"FULL":m.v}</b>${m.v===60?"1h+":"min"}</label>`).join("")}</div></div>
+    ${focus}
+  </div>
+  <div class="card"><span class="label">Seu treino diário</span>
+    <ul class="mix">
+      <li><b>Revisão</b> até ${cfg.rev} frases no dia certo de revisar</li>
+      <li><b>Blocos</b> ${cfg.ch} ${cfg.ch===1?"bloco":"blocos"} de frases-coringa com shadowing</li>
+      <li><b>Atividades novas</b> ${cfg.acts} por dia</li>
+      ${cfg.listen?`<li><b>Escuta real</b> ${cfg.listen} min de áudio nativo</li>`:""}
+    </ul></div>
+  <div class="card"><span class="label">Resumo</span>${summary}
+    <p class="small muted">Nível de partida: ${LG().level===null?"faça o teste de nível":LEVELS[LG().level]}.</p></div>
+  <section class="stack"><h3>Atividades novas nos próximos dias</h3>${sched}</section>`;
+}
+
+function vAnswers(){
+  const qs=questions(), ready=readyAnswers().length;
+  const cards=qs.map(q=>{const a=S.answers[q.id]||"";
+    return `<div class="card qa"><div class="row"><div class="txt" style="flex:1;min-width:0"><h3 lang="en">${esc(q.q)}</h3><span class="small muted">${esc(q.pt)}</span></div>
+      <button class="iconbtn" data-act="say" data-text="${esc(q.q)}" aria-label="Ouvir pergunta">${ICONS.play}</button></div>
+      <label class="small" for="ans-${q.id}">Sua resposta em inglês</label>
+      <textarea id="ans-${q.id}" data-ans="${q.id}" rows="4" lang="en" placeholder="Escreva aqui, ou toque em Usar modelo para começar de um exemplo.">${esc(a)}</textarea>
+      <div class="row">${a.trim()?"":`<button class="btn small ghost" data-act="usemodel" data-q="${q.id}">Usar modelo</button>`}
+      ${a.trim()?`<button class="btn small ghost" data-act="sayans" data-q="${q.id}">${ICONS.play}Ouvir minha resposta</button>`:""}
+      ${a.trim()&&AI.kind?`<button class="btn small ghost" data-act="fixans" data-q="${q.id}" ${ansFix[q.id]&&ansFix[q.id].busy?"disabled":""}>Corrigir com IA</button>`:""}
+      ${a.includes("[")?`<span class="small err">Troque os trechos entre colchetes pelos seus dados.</span>`:""}</div>${ansFixHTML(q.id)}</div>`}).join("");
+  return `<div class="lhead">${backBtn()}<div class="t"><span class="label">Profissional</span><h2>Minhas respostas</h2></div></div>
+  <div class="note">Escreva do seu jeito, com frases curtas e um exemplo com número. Use o modelo como ponto de partida. ${AI.kind?"Depois toque em Corrigir com IA para deixar o texto natural antes de treinar.":"Configure a conversa com IA (grátis) em Ajustes para corrigir suas respostas aqui mesmo."}</div>
+  <button class="btn sign" data-act="trainans" ${ready?"":"disabled"}>Treinar ${ready} ${ready===1?"resposta":"respostas"} falando</button>
+  ${cards}`;
+}
+
+function vMethod(){
+  const sites=(SITES[S.lang]||[]).map(([n,u,d])=>`<li><a href="${u}" target="_blank" rel="noopener">${esc(n)}</a><span class="small muted">${esc(d)}</span></li>`).join("");
+  return `<div class="lhead">${backBtn()}<div class="t"><span class="label">Como estudar</span><h2>Método e sites</h2></div></div>
+  <div class="card"><span class="label">O método do app</span>
+    <ol class="method">
+      <li><b>Blocos antes de gramática.</b> Jogadores e artistas que se mudam para fora aprendem frases prontas que usam todo dia ("Could I get…", "I'm looking for…") e trocam só uma palavra. É o que a seção Blocos treina.</li>
+      <li><b>Shadowing.</b> Ouça no ritmo nativo e fale junto, ao mesmo tempo, imitando a entonação. O botão Shadowing 3x toca a frase três vezes com pausa para você acompanhar.</li>
+      <li><b>Falar desde o primeiro dia.</b> Toda frase tem microfone e nota. Errar em voz alta aqui é o que evita travar no balcão ou na entrevista.</li>
+      <li><b>Revisão espaçada.</b> Cada frase praticada volta no dia certo: amanhã se você errou, em 3, 7, 14 e 30 dias se acertou. Poucos minutos por dia fixam muito mais que horas num dia só.</li>
+      <li><b>Escuta real todo dia.</b> Nos treinos de 30 min e full time entra um bloco de áudio nativo. Use os sites abaixo.</li>
+      <li><b>Conversa livre.</b> O app não conversa livremente com você. Para isso, pratique com o Claude: peça uma simulação de entrevista ou de check-in e para ele corrigir suas respostas.</li>
+    </ol></div>
+  <div class="card"><span class="label">Treino por tempo disponível</span>
+    <div class="tbl"><table><thead><tr><th>Tempo</th><th>Revisão</th><th>Blocos</th><th>Atividades</th><th>Escuta</th></tr></thead>
+    <tbody>${MINUTES.map(m=>{const c=SESSION_CFG[m.v];return `<tr><td>${minLabel(m.v)}</td><td>${c.rev}</td><td>${c.ch}</td><td>${c.acts}</td><td>${c.listen?c.listen+" min":"—"}</td></tr>`}).join("")}</tbody></table></div></div>
+  <div class="card"><span class="label">Sites gratuitos · ${esc(LANGS[S.lang].name)}</span><ul class="sites">${sites}</ul></div>`;
+}
+function vListen(){
+  const sites=(SITES[S.lang]||[]).map(([n,u,d])=>`<li><a href="${u}" target="_blank" rel="noopener">${esc(n)}</a><span class="small muted">${esc(d)}</span></li>`).join("");
+  const s=getSession().steps[V.step];
+  return `<div class="lhead">${backBtn()}<div class="t"><span class="label">Treino de hoje</span><h2>Escuta real</h2></div></div>
+  <div class="card"><p>Ouça <b>${s?s.min:15} minutos</b> de ${esc(LANGS[S.lang].name.toLowerCase())} nativo, sem pausar a cada palavra. Entender a ideia geral já conta.</p>
+    <p class="small muted">Dica: escolha um trecho de 30 segundos e faça shadowing dele no final.</p>
+    <ul class="sites">${sites}</ul></div>
+  <button class="btn sign" data-act="listendone">Concluí a escuta</button>`;
+}
+
+function vSettings(){
+  const v=voiceFor(bcp());
+  let acct;
+  if(!fb.enabled)acct=`<p>O progresso fica salvo só neste aparelho.</p><p class="small muted">Para entrar com e-mail e senha e sincronizar entre iPhone, Android e Windows, configure o Firebase no arquivo index.html (veja o LEIA-ME).</p>`;
+  else if(fb.failed)acct=`<p class="err">${esc(fb.status)}</p>`;
+  else if(fb.user)acct=`<p>Conectado como <b>${esc(fb.user.email||"")}</b></p><p class="small muted">${esc(fb.status)}</p><button class="btn" data-act="logout" style="align-self:flex-start">Sair da conta</button>`;
+  else acct=`<p>Usando sem conta neste aparelho.</p><button class="btn sign" data-act="toauth" style="align-self:flex-start">Entrar ou criar conta</button>`;
+  return `<div class="lhead">${backBtn()}<div class="t"><h2>Ajustes</h2></div></div>
+  <div class="card"><span class="label">Conta</span>${acct}</div>
+  <div class="card"><span class="label">Conversa com IA</span><p class="small"><b>${esc(aiStatusText())}</b></p>${AI.kind==="claude"?"":gemSetupHTML()}</div>
+  <div class="card"><span class="label">Voz</span>
+    <div class="field"><span>Velocidade da fala</span>${speedSeg()}
+      <p class="small muted">Nativo é o ritmo de uma conversa real. O botão “Devagar” das lições sempre toca bem lento.</p></div>
+    <p class="small">Voz em ${esc(LANGS[S.lang].name.toLowerCase())}: ${v?`<b>${esc(v.name)}</b>`:`<span class="err">não encontrada neste aparelho</span>`}</p>
+    ${v?"":`<p class="small muted">Instale a voz: no Windows, Configurações › Hora e idioma › Fala › Adicionar vozes. No iPhone, Ajustes › Acessibilidade › Conteúdo Falado › Vozes. No Android, Configurações › Saída de conversão de texto em voz.</p>`}
+    <button class="btn" data-act="say" data-text="${esc(lines("imm",0)[0][1])}" style="align-self:flex-start">${ICONS.play}Testar voz</button>
+    <p class="small">Reconhecimento de fala: ${Rec?(micBlocked?`<span class="err">microfone bloqueado</span>`:"disponível"):`<span class="err">não disponível neste navegador</span>`}</p>
+  </div>
+  <div class="card"><span class="label">Instalar como app</span>
+    <p class="small"><b>iPhone:</b> abra no Safari, toque em Compartilhar › Adicionar à Tela de Início.</p>
+    <p class="small"><b>Android:</b> no Chrome, menu ⋮ › Instalar app.</p>
+    <p class="small"><b>Windows:</b> no Edge ou Chrome, ícone de instalar na barra de endereço.</p></div>
+  <div class="card"><span class="label">Progresso</span>
+    ${confirmReset?`<div class="confirm"><p>Apagar todo o progresso de ${esc(LANGS[S.lang].name.toLowerCase())}? Isso não pode ser desfeito.</p><div class="row"><button class="btn" data-act="doreset">Apagar</button><button class="btn ghost" data-act="cancelreset">Cancelar</button></div></div>`
+      :`<button class="btn ghost" data-act="askreset" style="align-self:flex-start">Apagar progresso deste idioma</button>`}
+  </div>`;
+}
+
+/* ============ AÇÕES ============ */
+function currentTarget(it){return it.type==="conv"?it.you[1]:it.type==="ans"?it.text:it.type==="rev"?it.text:it.line[1]}
+async function doMic(){
+  if(LS.listening){try{recActive&&recActive.stop()}catch(e){}return}
+  const it=LS.items[LS.i], target=currentTarget(it);
+  LS.listening=true;LS.res=null;render();
+  try{
+    const alts=await listen(bcp(),it.type==="ans");
+    LS.listening=false;
+    const r=scoreBest(target,alts,S.lang);
+    LS.res=r;
+    if(it.type==="speak")LS.cur={ok:r.pct>=PASS_SPEAK};
+    else LS.cur=Math.max(typeof LS.cur==="number"?LS.cur:0,r.pct);
+    if(it.type==="rev"&&LS.revOk===undefined)LS.revOk=r.pct>=PASS_SPEAK;
+  }catch(e){
+    LS.listening=false;
+    if(e==="not-allowed"||e==="service-not-allowed"){micBlocked=true;LS.res={error:"O microfone não foi liberado. Permita o acesso ao microfone nas configurações do navegador, ou use “Falei em voz alta”."}}
+    else if(e==="no-speech")LS.res={error:"Não ouvi nada. Toque no microfone e fale logo em seguida."};
+    else if(e==="aborted")LS.res=null;
+    else if(e==="network")LS.res={error:"O reconhecimento de fala precisa de internet neste navegador."};
+    else LS.res={error:"Não consegui ouvir. Tente de novo."};
+  }
+  render();
+}
+function doNext(){
+  const it=LS.items[LS.i];
+  if(LS.mode==="test"){
+    if(it.type==="speak")LS.results.push({lvl:it.lvl,ok:!!(LS.cur&&LS.cur.ok)});
+    else LS.results.push({lvl:it.lvl,ok:!!(LS.answered&&LS.answered.ok)});
+  }else if(LS.mode==="quiz"){
+    const ok=!!(LS.answered&&LS.answered.ok);LS.scores.push(ok);srsMark(it.key,ok);
+  }else if(it.type==="rev"){
+    if(LS.revOk!==undefined){srsMark(it.key,LS.revOk);LS.scores.push(LS.revOk?100:0)}
+  }else if(typeof LS.cur==="number"){
+    LS.scores.push(LS.cur);
+    if(it.key)srsMark(it.key,LS.cur>=PASS_SPEAK);
+  }
+  LS.cur=undefined;LS.res=null;LS.answered=null;LS.reveal=false;LS.revOk=undefined;
+  stopAudio();LS.listening=false;
+  if(LS.i>=LS.items.length-1){finishLesson();return}
+  LS.i++;
+  render();window.scrollTo(0,0);
+  autoPlay();
+}
+let ansTimer=null;
+const ACT={
+  go:d=>go(d.to),
+  lang:d=>{S.lang=d.lang;save();render()},
+  unit:d=>go("unit",{scen:d.scen,lvl:+d.lvl}),
+  start:d=>startLesson(d.scen,+d.lvl,d.mode),
+  step:d=>startStep(+d.i),
+  test:()=>startTest(),
+  review:()=>startReview(15),
+  chunksx:()=>startChunks(3),
+  quit:()=>{LS=null;go("home")},
+  say:d=>say(d.text,d.slow==="1"),
+  shadow:d=>shadow(d.text),
+  speed:d=>{S.speed=d.speed;save();render();
+    const it=LS&&V.name==="lesson"?LS.items[LS.i]:null;
+    say(it?(it.type==="conv"?it.them[1]:it.type==="ans"?it.q.q:currentTarget(it)):lines("imm",0)[0][1])},
+  mic:()=>doMic(),
+  selfok:()=>{LS.res={self:true};LS.cur=100;if(LS.items[LS.i].type==="rev"&&LS.revOk===undefined)LS.revOk=true;render()},
+  revself:d=>{LS.revOk=d.ok==="1";render()},
+  reveal:()=>{LS.reveal=true;render()},
+  next:()=>doNext(),
+  choose:d=>{const it=LS.items[LS.i],i=+d.i;LS.answered={i,ok:it.opts[i]===it.answer};render()},
+  cleardate:()=>{LG().plan.date="";save();render()},
+  usemodel:d=>{const q=questions().find(x=>x.id===d.q);S.answers[d.q]=q.model;save();render();const t=document.getElementById("ans-"+d.q);if(t){t.focus();t.setSelectionRange(0,0)}},
+  sayans:d=>say(S.answers[d.q]||""),
+  trainans:()=>startAnswers(),
+  talkopen:()=>{LT=null;go("talk")},
+  talkstart:()=>talkStart(),
+  talksend:()=>{const t=document.getElementById("talk-input");talkSend(t?t.value:"")},
+  talkmic:()=>talkMic(),
+  talkretry:()=>{if(LT.summarizing||LT.turns.filter(x=>x.who==="me").length>=2&&LT.lastFinish)talkFinish();else talkCall()},
+  talkfinish:()=>{LT.lastFinish=true;talkFinish()},
+  talksave:()=>talkSaveReview(),
+  talknew:()=>{const st=LT&&LT.step;LT=null;go("talk",{step:st})},
+  talkquit:()=>{if(LT&&LT.ctl)LT.ctl.abort();const mine=LT?LT.turns.filter(x=>x.who==="me").length:0;if(LT&&LT.step!=null&&mine>=4)markStep(LT.step);LT=null;go("home")},
+  fixans:d=>fixAnswer(d.q),
+  usefix:d=>{S.answers[d.q]=ansFix[d.q].improved;delete ansFix[d.q];save();render();toast("Resposta atualizada.")},
+  dropfix:d=>{delete ansFix[d.q];render()},
+  gemsave:async()=>{
+    const k=(document.getElementById("gem-key").value||"").trim();
+    if(!k){toast("Cole a chave antes de salvar.");return}
+    toast("Testando a chave…");
+    try{
+      const models=await gemListModels(k);
+      store.set("embarque:gemini",k);AI.gemModels=models;
+      if(models.length&&!models.includes(gemModel()))store.set("embarque:geminiModel",models[0]);
+      refreshAI();toast("Chave salva. A conversa com IA está pronta.");
+    }catch(e){toast(e===400||e===401||e===403?"O Google recusou essa chave. Confira se copiou inteira.":"Não consegui testar a chave agora. Confira a internet.")}
+    render();
+  },
+  gemclear:()=>{try{localStorage.removeItem("embarque:gemini")}catch(e){}AI.gemModels=null;refreshAI();render()},
+  listendone:()=>{markStep(V.step);toast("Escuta registrada.");go("home")},
+  askreset:()=>{confirmReset=true;render()},
+  cancelreset:()=>{confirmReset=false;render()},
+  doreset:()=>{S.langs[S.lang]=blankLang();save();confirmReset=false;toast("Progresso apagado.");render()},
+  logout:async()=>{try{await firebase.auth().signOut()}catch(e){}fb.localMode=false;go("auth")},
+  toauth:()=>{fb.localMode=false;go("auth")},
+  localmode:()=>{fb.localMode=true;uidKey="local";S=loadState();go("home")},
+  authmode:d=>go("auth",{mode:d.mode})
+};
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-act]");if(!t)return;
+  const f=ACT[t.dataset.act];if(f){e.preventDefault();f(t.dataset,t)}
+});
+document.addEventListener("change",e=>{
+  const t=e.target.closest("[data-change]");if(!t)return;
+  const k=t.dataset.change, lg=LG();
+  if(k==="plandate"){lg.plan.date=t.value;save();render()}
+  else if(k==="planmin"){lg.plan.minutes=+t.value;save();render()}
+  else if(k==="gemmodel"){store.set("embarque:geminiModel",t.value);toast("Modelo trocado.")}
+  else if(k==="planfocus"){lg.plan.focus=t.value;if(lg.session&&!lg.session.steps.some(x=>x.done))lg.session=null;save();render()}
+});
+/* Respostas: salva enquanto digita, sem redesenhar a tela */
+document.addEventListener("input",e=>{
+  if(e.target.id==="talk-input"&&LT){LT.draft=e.target.value;return}
+  const t=e.target.closest("[data-ans]");if(!t)return;
+  S.answers[t.dataset.ans]=t.value;
+  clearTimeout(ansTimer);ansTimer=setTimeout(save,600);
+});
+document.addEventListener("focusout",e=>{
+  if(!(e.target.closest&&e.target.closest("[data-ans]")))return;
+  save();
+  setTimeout(()=>{const a=document.activeElement;if(V.name==="answers"&&!(a&&a.dataset&&a.dataset.ans))render()},300);
+});
+document.addEventListener("keydown",e=>{
+  if(e.target.id==="talk-input"&&e.key==="Enter"&&!e.shiftKey){e.preventDefault();talkSend(e.target.value)}
+});
+document.addEventListener("submit",e=>{if(e.target.id==="authform"){e.preventDefault();submitAuth()}});
+
+/* Tempo de estudo: conta enquanto uma lição está aberta e visível */
+let tick=0;
+setInterval(()=>{
+  if((V.name==="lesson"||V.name==="listen"||V.name==="answers"||V.name==="talk")&&document.visibilityState==="visible"){
+    S.days[today()]=(S.days[today()]||0)+5;
+    if(++tick%6===0)save();
+  }
+},5000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")save()});
+
+/* App instalável (funciona quando hospedado no GitHub Pages) */
+if("serviceWorker" in navigator&&location.protocol==="https:"&&window.top===window.self){
+  try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+}
+
+render();
+initFirebase();
+initAI();
+</script>
+</body>
+</html>
